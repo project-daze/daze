@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     public event Action OnHover;
     public event Action<float> OnDiveMove;
 
-    public Debug Debug = new();
+    public UiDebug Debug = new();
 
     private void Awake()
     {
