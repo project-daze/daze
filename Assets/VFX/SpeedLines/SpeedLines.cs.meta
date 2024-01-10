@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: f3f62530448412d4387671ab63c8945e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 217755
+  packageName: 3D Speed Lines
+  packageVersion: 1.0
+  assetPath: Assets/Speed Lines/SpeedLines.cs
+  uploadId: 520626

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: e55ba688357c107419144130d0776fbf
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 212670
+  packageName: Colored Smoke FX Pack
+  packageVersion: 2.0
+  assetPath: Assets/Colored_Smoke_FX_Pack/Shaders/Smoke_Shader_Flipbook.shader
+  uploadId: 568903

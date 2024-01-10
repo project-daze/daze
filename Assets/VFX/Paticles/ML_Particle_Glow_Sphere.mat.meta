@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2fe31d1d1f3ed6b47b78168907e5739c
+timeCreated: 1436172737
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 50735
+  packageName: Inferno VFX
+  packageVersion: 2.6.0
+  assetPath: Assets/Mirza Beig/Particle Systems/Inferno VFX/Materials/Particles/Sprites/mat_vfx-inf_particle_sprite_glowSphere3-alpha-[3.0].mat
+  uploadId: 235952
