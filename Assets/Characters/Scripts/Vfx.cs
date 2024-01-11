@@ -6,7 +6,7 @@ namespace Daze.Characters
     [Serializable]
     public class Vfx
     {
-        [NonSerialized] public Player Player;
+        [NonSerialized] public global::Player Player;
         [NonSerialized] public AnimationEvent AnimationEvent;
 
         public ParticleSystem WalkL;
@@ -18,7 +18,7 @@ namespace Daze.Characters
         public ParticleSystem BlowHard01;
         public ParticleSystem BlowHard02;
 
-        public void OnAwake(Player player)
+        public void OnAwake(global::Player player)
         {
             Player = player;
             AnimationEvent = Player.GetComponentInChildren<AnimationEvent>();

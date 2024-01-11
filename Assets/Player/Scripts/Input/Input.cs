@@ -1,14 +1,26 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Daze.P.Actions
+namespace Daze.Player
 {
-    public class Action : Controls.IPlayerActions
+    public class Input : MonoBehaviour, Controls.IPlayerActions
     {
+        [NonSerialized] public Controller Controller;
+
         private Controls _controls;
 
         public Vector2 MoveComposite;
         public Vector2 LookComposite;
+
+        public event Action Jump;
+        public event Action GravityOn;
+        public event Action GravityOff;
+
+        public void OnAwake(Controller controller)
+        {
+            Controller = controller;
+        }
 
         public void OnEnable()
         {
@@ -38,7 +50,7 @@ namespace Daze.P.Actions
         {
             if (context.performed)
             {
-
+                Jump?.Invoke();
             }
         }
 
@@ -46,7 +58,7 @@ namespace Daze.P.Actions
         {
             if (context.performed)
             {
-
+                GravityOn?.Invoke();
             }
         }
 
@@ -54,7 +66,7 @@ namespace Daze.P.Actions
         {
             if (context.performed)
             {
-
+                GravityOff?.Invoke();
             }
         }
 

@@ -6,7 +6,7 @@ namespace Daze.Camera
 {
     public class CameraControl : MonoBehaviour
     {
-        public Player Player;
+        public global::Player Player;
         [NonSerialized] public CinemachineBrain Brain;
         public Transform MainCamera;
         public CinemachineFreeLook LookCamera;
