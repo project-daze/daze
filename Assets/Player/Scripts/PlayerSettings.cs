@@ -60,5 +60,13 @@ namespace Daze.Player
 
         public float LiftAcceleration = 0.1f;
         public float LiftTime = 0.8f;
+
+        // ---------------------------------------------------------------------
+        // Camera Settings
+        // ---------------------------------------------------------------------
+
+        [Header("Free Camera Settings")]
+
+        public float FreeCameraRotationSpeed = 200f;
     }
 }

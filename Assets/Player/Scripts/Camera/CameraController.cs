@@ -6,7 +6,9 @@ namespace Daze.Player.Camera
 {
     public class CameraController : MonoBehaviour
     {
-        [NonSerialized] public PlayerController PlayerController;
+        [NonSerialized] public PlayerSettings Settings;
+        [NonSerialized] public PlayerInput Input;
+        [NonSerialized] public PlayerState State;
 
         public Transform Main;
         public CinemachineFreeLook Look;
@@ -16,12 +18,11 @@ namespace Daze.Player.Camera
         public Transform FreeFollowTarget;
         public Transform Avatar;
 
-        [Header("Free Camera Settings")]
-        public float FreeCameraRotationSpeed = 200f;
-
-        public void OnAwake(PlayerController pc)
+        public void OnAwake(PlayerSettings settings, PlayerInput input, PlayerState state)
         {
-            PlayerController = pc;
+            Settings = settings;
+            Input = input;
+            State = state;
         }
 
         public void LateUpdate()
@@ -58,10 +59,10 @@ namespace Daze.Player.Camera
 
             // Else, it means the Free camera is active. Update its rotation
             // using the player's input.
-            if (PlayerController.Input.LookComposite == Vector2.zero) return;
+            if (Input.LookComposite == Vector2.zero) return;
 
-            float x = -PlayerController.Input.LookComposite.y * FreeCameraRotationSpeed * Time.deltaTime;
-            float y = PlayerController.Input.LookComposite.x * FreeCameraRotationSpeed * Time.deltaTime;
+            float x = -Input.LookComposite.y * Settings.FreeCameraRotationSpeed * Time.deltaTime;
+            float y = Input.LookComposite.x * Settings.FreeCameraRotationSpeed * Time.deltaTime;
 
             FreeFollowTarget.Rotate(x, y, 0f);
         }
@@ -73,8 +74,8 @@ namespace Daze.Player.Camera
 
         private bool ShouldTransition()
         {
-            if (PlayerController.IsFalling && IsLookActive()) return true;
-            if (!PlayerController.IsFalling && !IsLookActive()) return true;
+            if (State.IsFalling && IsLookActive()) return true;
+            if (!State.IsFalling && !IsLookActive()) return true;
             return false;
         }
     }

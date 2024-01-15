@@ -9,5 +9,10 @@ namespace Daze.Player.Avatar
 
         public GroundToLiftTransition(Context ctx) : base(ctx)
         { }
+
+        public override void OnTransition()
+        {
+            Ctx.EnterFalling();
+        }
     }
 }

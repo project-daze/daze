@@ -4,9 +4,10 @@ namespace Daze.Player.Avatar
 {
     public class LiftState : State
     {
+        public override bool NeedsExitTime { get => true; }
+
         private float _speed = 0f;
         private float _timer = 0f;
-        private bool _stop = false;
 
         public LiftState(Context ctx) : base(ctx)
         { }
@@ -15,7 +16,6 @@ namespace Daze.Player.Avatar
         {
             _speed = 0f;
             _timer = 0f;
-            _stop = false;
         }
 
         /// <summary>
@@ -25,24 +25,28 @@ namespace Daze.Player.Avatar
         /// </summary>
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
-            if (_stop) {
+            if (_timer >= Ctx.Settings.LiftTime) {
+                State.fsm.StateCanExit();
                 return;
             }
 
-            Ctx.Motor.ForceUnground();
+            // Force unground if the player is on or near the ground in order
+            // to lift off.
+            if (Ctx.Motor.GroundingStatus.FoundAnyGround || Ctx.Motor.GroundingStatus.IsStableOnGround)
+            {
+                Ctx.Motor.ForceUnground();
+            }
 
             _timer += deltaTime;
-
-            if (_timer >= Ctx.Settings.LiftTime) {
-                _stop = true;
-                _timer = 0f;
-                velocity = Vector3.zero;
-                return;
-            }
 
             _speed += Ctx.Settings.LiftAcceleration;
 
             velocity = -Ctx.Settings.Gravity * (_speed * deltaTime);
+        }
+
+        public override bool CanExit()
+        {
+            return false;
         }
     }
 }

@@ -16,22 +16,40 @@ namespace Daze.Player.Avatar
         private Context _ctx;
         private StateMachine<StateType, StateEvent> _fsm;
 
+        public event Action EnterFallingState;
+        public event Action LeaveFallingState;
+
         public void OnAwake(PlayerSettings settings, PlayerInput input, Transform camera)
         {
             Settings = settings;
             Input = input;
             Camera = camera;
-
-            Input.GravityOn += () => _fsm.Trigger(StateEvent.GravityOn);
-            Input.GravityOff += () => _fsm.Trigger(StateEvent.GravityOff);
         }
 
         public void Start()
         {
             Motor.CharacterController = this;
+            SetupInput();
+            SetupContext();
+            SetupFms();
+        }
 
+        private void SetupInput()
+        {
+            Input.GravityOn += () => _fsm.Trigger(StateEvent.GravityOn);
+            Input.GravityOff += () => _fsm.Trigger(StateEvent.GravityOff);
+        }
+
+        private void SetupContext()
+        {
             _ctx = new(Settings, Input, Camera, Motor);
 
+            _ctx.EnterFallingState += () => EnterFallingState?.Invoke();
+            _ctx.LeaveFallingState += () => LeaveFallingState?.Invoke();
+        }
+
+        private void SetupFms()
+        {
             _fsm = new FsmBuilder(_ctx).Make();
 
             _fsm.Init();

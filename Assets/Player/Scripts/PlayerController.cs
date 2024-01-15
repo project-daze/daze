@@ -9,16 +9,18 @@ namespace Daze.Player
     {
         public PlayerSettings Settings;
         public PlayerInput Input;
+        public PlayerState State;
 
         public CameraController Camera;
         public AvatarController Avatar;
 
-        public bool IsFalling = false;
-
         private void Awake()
         {
             Avatar.OnAwake(Settings, Input, Camera.Main);
-            Camera.OnAwake(this);
+            Camera.OnAwake(Settings, Input, State);
+
+            Avatar.EnterFallingState += () => State.IsFalling = true;
+            Avatar.LeaveFallingState += () => State.IsFalling = false;
         }
     }
 }

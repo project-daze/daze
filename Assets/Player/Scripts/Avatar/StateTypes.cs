@@ -3,7 +3,8 @@ namespace Daze.Player.Avatar
     public enum StateType
     {
         Ground,
-        Lift
+        Lift,
+        Hover,
     }
 
     public enum StateEvent
