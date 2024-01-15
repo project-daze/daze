@@ -54,6 +54,12 @@ namespace Daze.Player.Avatar
                 new HoverToGroundTransition(Ctx).Make()
             );
 
+            // Hover -> Fall: On Input GravityOn.
+            fsm.AddTriggerTransition(
+                StateEvent.GravityOff,
+                new HoverToFallTransition(Ctx).Make()
+            );
+
             return fsm;
         }
     }

@@ -5,6 +5,7 @@ namespace Daze.Player.Avatar
         Ground,
         Lift,
         Hover,
+        Fall,
     }
 
     public enum StateEvent
