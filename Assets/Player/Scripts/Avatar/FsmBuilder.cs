@@ -44,6 +44,16 @@ namespace Daze.Player.Avatar
                 new LiftToGroundTransition(Ctx).Make()
             );
 
+            // -----------------------------------------------------------------
+            // Hover Transitions
+            // -----------------------------------------------------------------
+
+            // Hover -> Ground: On Input GravityOff.
+            fsm.AddTriggerTransition(
+                StateEvent.GravityOff,
+                new HoverToGroundTransition(Ctx).Make()
+            );
+
             return fsm;
         }
     }

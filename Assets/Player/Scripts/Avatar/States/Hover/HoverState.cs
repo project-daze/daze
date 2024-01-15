@@ -9,13 +9,6 @@ namespace Daze.Player.Avatar
         private float _driftTimeV = 0f;
         private float _driftTimeH = 0f;
 
-        public float _driftVAmplitude1 = 0.4f;
-        public float _driftVAmplitude2 = 0.25f;
-        public float _driftVFrequency = 1f;
-
-        public float _driftHAmplitude = 0.1f;
-        public float _driftHFrequency = 0.1f;
-
         public HoverState(Context ctx) : base(ctx)
         { }
 
@@ -44,9 +37,9 @@ namespace Daze.Player.Avatar
         {
             // If the velocity is bigger than 0.5, we will slowdown the player
             // until it reaches 0.5.
-            if (velocity.magnitude > 0.5f)
+            if (velocity.magnitude > 0.1f)
             {
-                velocity *= 0.1f * deltaTime;
+                velocity += -velocity.normalized * deltaTime;
                 return;
             }
 
@@ -55,18 +48,16 @@ namespace Daze.Player.Avatar
 
         private void Drift(ref Vector3 velocity, float deltaTime)
         {
-            _driftTimeV += _driftVFrequency * deltaTime;
-            _driftTimeH += _driftHFrequency * deltaTime;
+            _driftTimeV += Ctx.Settings.DriftVFrequency * deltaTime;
+            _driftTimeH += Ctx.Settings.DriftHFrequency * deltaTime;
 
-            float v = _driftTimeV % (2 * Mathf.PI) > Mathf.PI
-                ? Mathf.Sin(-_driftTimeV * Mathf.PI) * _driftVAmplitude2
-                : Mathf.Sin(-_driftTimeV * Mathf.PI) * _driftVAmplitude1;
+            float v = Mathf.Sin(-_driftTimeV) * Ctx.Settings.DriftVAmplitude;
+            float h = Mathf.Cos(-_driftTimeH) * Ctx.Settings.DriftHAmplitude;
 
-            float h = Mathf.Sin(-_driftTimeH * Mathf.PI) * _driftHAmplitude;
+            Vector3 vOffset = -Ctx.Settings.Gravity.normalized * v;
+            Vector3 hOffset = Ctx.Camera.right.normalized * h;
 
-            Vector3 offset = (Ctx.Settings.Gravity * v) + (Ctx.Camera.right * h);
-
-            velocity = offset;
+            velocity = vOffset + hOffset;
         }
     }
 }

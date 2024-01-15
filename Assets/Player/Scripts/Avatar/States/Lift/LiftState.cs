@@ -16,6 +16,7 @@ namespace Daze.Player.Avatar
         {
             _speed = 0f;
             _timer = 0f;
+            Ctx.Motor.SetGroundSolvingActivation(false);
         }
 
         /// <summary>
@@ -28,13 +29,6 @@ namespace Daze.Player.Avatar
             if (_timer >= Ctx.Settings.LiftTime) {
                 State.fsm.StateCanExit();
                 return;
-            }
-
-            // Force unground if the player is on or near the ground in order
-            // to lift off.
-            if (Ctx.Motor.GroundingStatus.FoundAnyGround || Ctx.Motor.GroundingStatus.IsStableOnGround)
-            {
-                Ctx.Motor.ForceUnground();
             }
 
             _timer += deltaTime;
