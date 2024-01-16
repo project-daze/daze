@@ -22,4 +22,4 @@ You may find external resources such as 3D model source file in the shared Googl
 
 Join our Discord server for discussion.
 
-- [Discord](https://discord.gg/S4DNfh8c)
+- [Discord](https://discord.gg/JCxmCbFdr2)
