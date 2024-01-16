@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace Daze.Player
 {
-    public class PlayerInput : MonoBehaviour, Controls.IPlayerActions
+    public class PlayerInput : MonoBehaviour, Controls.IGamePlayActions
     {
         private Controls _controls;
 
@@ -20,13 +20,13 @@ namespace Daze.Player
             if (_controls != null) return;
 
             _controls = new Controls();
-            _controls.Player.SetCallbacks(this);
-            _controls.Player.Enable();
+            _controls.GamePlay.SetCallbacks(this);
+            _controls.GamePlay.Enable();
         }
 
         public void OnDisable()
         {
-            _controls.Player.Disable();
+            _controls.GamePlay.Disable();
         }
 
         public void OnMove(InputAction.CallbackContext context)
