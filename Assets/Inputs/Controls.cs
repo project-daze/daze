@@ -24,7 +24,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     ""name"": ""Controls"",
     ""maps"": [
         {
-            ""name"": ""Player"",
+            ""name"": ""GamePlay"",
             ""id"": ""2931e5f9-5cb7-4aa5-b0b2-68d479f58536"",
             ""actions"": [
                 {
@@ -281,14 +281,14 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         }
     ]
 }");
-        // Player
-        m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
-        m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
-        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-        m_Player_GravityOn = m_Player.FindAction("GravityOn", throwIfNotFound: true);
-        m_Player_GravityOff = m_Player.FindAction("GravityOff", throwIfNotFound: true);
-        m_Player_GravityDive = m_Player.FindAction("GravityDive", throwIfNotFound: true);
+        // GamePlay
+        m_GamePlay = asset.FindActionMap("GamePlay", throwIfNotFound: true);
+        m_GamePlay_Move = m_GamePlay.FindAction("Move", throwIfNotFound: true);
+        m_GamePlay_Look = m_GamePlay.FindAction("Look", throwIfNotFound: true);
+        m_GamePlay_Jump = m_GamePlay.FindAction("Jump", throwIfNotFound: true);
+        m_GamePlay_GravityOn = m_GamePlay.FindAction("GravityOn", throwIfNotFound: true);
+        m_GamePlay_GravityOff = m_GamePlay.FindAction("GravityOff", throwIfNotFound: true);
+        m_GamePlay_GravityDive = m_GamePlay.FindAction("GravityDive", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -347,34 +347,34 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Player
-    private readonly InputActionMap m_Player;
-    private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
-    private readonly InputAction m_Player_Move;
-    private readonly InputAction m_Player_Look;
-    private readonly InputAction m_Player_Jump;
-    private readonly InputAction m_Player_GravityOn;
-    private readonly InputAction m_Player_GravityOff;
-    private readonly InputAction m_Player_GravityDive;
-    public struct PlayerActions
+    // GamePlay
+    private readonly InputActionMap m_GamePlay;
+    private List<IGamePlayActions> m_GamePlayActionsCallbackInterfaces = new List<IGamePlayActions>();
+    private readonly InputAction m_GamePlay_Move;
+    private readonly InputAction m_GamePlay_Look;
+    private readonly InputAction m_GamePlay_Jump;
+    private readonly InputAction m_GamePlay_GravityOn;
+    private readonly InputAction m_GamePlay_GravityOff;
+    private readonly InputAction m_GamePlay_GravityDive;
+    public struct GamePlayActions
     {
         private @Controls m_Wrapper;
-        public PlayerActions(@Controls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Move => m_Wrapper.m_Player_Move;
-        public InputAction @Look => m_Wrapper.m_Player_Look;
-        public InputAction @Jump => m_Wrapper.m_Player_Jump;
-        public InputAction @GravityOn => m_Wrapper.m_Player_GravityOn;
-        public InputAction @GravityOff => m_Wrapper.m_Player_GravityOff;
-        public InputAction @GravityDive => m_Wrapper.m_Player_GravityDive;
-        public InputActionMap Get() { return m_Wrapper.m_Player; }
+        public GamePlayActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_GamePlay_Move;
+        public InputAction @Look => m_Wrapper.m_GamePlay_Look;
+        public InputAction @Jump => m_Wrapper.m_GamePlay_Jump;
+        public InputAction @GravityOn => m_Wrapper.m_GamePlay_GravityOn;
+        public InputAction @GravityOff => m_Wrapper.m_GamePlay_GravityOff;
+        public InputAction @GravityDive => m_Wrapper.m_GamePlay_GravityDive;
+        public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
-        public void AddCallbacks(IPlayerActions instance)
+        public static implicit operator InputActionMap(GamePlayActions set) { return set.Get(); }
+        public void AddCallbacks(IGamePlayActions instance)
         {
-            if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_GamePlayActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GamePlayActionsCallbackInterfaces.Add(instance);
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
@@ -395,7 +395,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @GravityDive.canceled += instance.OnGravityDive;
         }
 
-        private void UnregisterCallbacks(IPlayerActions instance)
+        private void UnregisterCallbacks(IGamePlayActions instance)
         {
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
@@ -417,21 +417,21 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @GravityDive.canceled -= instance.OnGravityDive;
         }
 
-        public void RemoveCallbacks(IPlayerActions instance)
+        public void RemoveCallbacks(IGamePlayActions instance)
         {
-            if (m_Wrapper.m_PlayerActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_GamePlayActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(IPlayerActions instance)
+        public void SetCallbacks(IGamePlayActions instance)
         {
-            foreach (var item in m_Wrapper.m_PlayerActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_GamePlayActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_PlayerActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_GamePlayActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public PlayerActions @Player => new PlayerActions(this);
+    public GamePlayActions @GamePlay => new GamePlayActions(this);
     private int m_GamepadSchemeIndex = -1;
     public InputControlScheme GamepadScheme
     {
@@ -450,7 +450,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             return asset.controlSchemes[m_KeyboardMouseSchemeIndex];
         }
     }
-    public interface IPlayerActions
+    public interface IGamePlayActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
