@@ -6,20 +6,24 @@ Project Daze is a project to create a game where you can "fall" into the sky. Ye
 
 You can find working game at [Google Drive / 00_Releases](https://drive.google.com/drive/u/0/folders/1SjECReoItrVSKB5FSF9JmaRexuQSGP_a)
 
-## Development
-
-We are looking for almost all kinds of contributors.
-
-- Unity version: `2023.1.10f1`
-
 ## Resources
 
-You may find external resources such as 3D model source file in the shared Google Drive folders.
+Resources outside of Unity, such as original 3D models and docs are managed in Google Drive. Feel free to look around.
 
-- [3D models and animations](https://drive.google.com/drive/u/0/folders/1E6dm3L2_MA5IOQeeQQojToDKew5wBAyM)
+- [Daze Resources](https://drive.google.com/drive/u/0/folders/1NlfMfVP_dxigVfg13az3Z_UdvHxHHx0s)
 
 ## Community
 
 Join our Discord server for discussion.
 
 - [Discord](https://discord.gg/JCxmCbFdr2)
+
+## Development
+
+We are looking for almost all kinds of contributors.
+
+- Unity version: `2023.1.10f1`
+
+### Style Guide
+
+Follow [Unity Style Guide](https://github.com/justinwasilenko/Unity-Style-Guide) as a ground rule. When in doubt, follow the style of existing code.
