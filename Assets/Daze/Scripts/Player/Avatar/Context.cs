@@ -11,6 +11,7 @@ namespace Daze.Player.Avatar
         public PlayerInput Input;
         public Transform Camera;
         public KinematicCharacterMotor Motor;
+        public Animator Animator;
 
         public event Action EnterFallingState;
         public event Action LeaveFallingState;
@@ -19,13 +20,15 @@ namespace Daze.Player.Avatar
             PlayerSettings settings,
             PlayerInput input,
             Transform camera,
-            KinematicCharacterMotor motor
+            KinematicCharacterMotor motor,
+            Animator animator
         )
         {
             Settings = settings;
             Input = input;
             Camera = camera;
             Motor = motor;
+            Animator = animator;
         }
 
         public void EnterFalling()

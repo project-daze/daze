@@ -67,10 +67,10 @@ namespace Daze.Player
 
         [Header("Drift Movement")]
 
-        public float DriftVAmplitude = 0.75f;
-        public float DriftVFrequency = 2f;
-        public float DriftHAmplitude = 0.5f;
-        public float DriftHFrequency = 0.5f;
+        public float DriftVAmplitude = 0.25f;
+        public float DriftVFrequency = 2.5f;
+        public float DriftHAmplitude = 0.125f;
+        public float DriftHFrequency = 0.625f;
 
         // ---------------------------------------------------------------------
         // Camera Settings

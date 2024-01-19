@@ -9,6 +9,8 @@ namespace Daze.Player.Avatar
         private float _driftTimeV = 0f;
         private float _driftTimeH = 0f;
 
+        private readonly int _hoverHash = Animator.StringToHash("Hover");
+
         public HoverState(Context ctx) : base(ctx)
         { }
 
@@ -17,6 +19,7 @@ namespace Daze.Player.Avatar
             _isStable = false;
             _driftTimeV = 0f;
             _driftTimeH = 0f;
+            Ctx.Animator.SetTrigger(_hoverHash);
         }
 
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)

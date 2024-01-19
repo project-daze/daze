@@ -9,6 +9,8 @@ namespace Daze.Player.Avatar
         private float _speed = 0f;
         private float _timer = 0f;
 
+        private readonly int _hoverHash = Animator.StringToHash("Hover");
+
         public LiftState(Context ctx) : base(ctx)
         { }
 
@@ -17,6 +19,7 @@ namespace Daze.Player.Avatar
             _speed = 0f;
             _timer = 0f;
             Ctx.Motor.SetGroundSolvingActivation(false);
+            Ctx.Animator.SetTrigger(_hoverHash);
         }
 
         /// <summary>

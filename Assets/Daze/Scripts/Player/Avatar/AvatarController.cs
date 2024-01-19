@@ -5,12 +5,15 @@ using UnityHFSM;
 
 namespace Daze.Player.Avatar
 {
+    [RequireComponent(typeof(KinematicCharacterMotor))]
     public class AvatarController : MonoBehaviour, ICharacterController
     {
         [NonSerialized] public PlayerSettings Settings;
         [NonSerialized] public PlayerInput Input;
         [NonSerialized] public Transform Camera;
 
+        public Transform Body;
+        public Animator Animator;
         public KinematicCharacterMotor Motor;
 
         private Context _ctx;
@@ -42,7 +45,7 @@ namespace Daze.Player.Avatar
 
         private void SetupContext()
         {
-            _ctx = new(Settings, Input, Camera, Motor);
+            _ctx = new(Settings, Input, Camera, Motor, Animator);
 
             _ctx.EnterFallingState += () => EnterFallingState?.Invoke();
             _ctx.LeaveFallingState += () => LeaveFallingState?.Invoke();
