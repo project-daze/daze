@@ -54,11 +54,14 @@ namespace Daze.Player.Avatar
             _driftTimeV += Ctx.Settings.DriftVFrequency * deltaTime;
             _driftTimeH += Ctx.Settings.DriftHFrequency * deltaTime;
 
-            float v = Mathf.Sin(-_driftTimeV) * Ctx.Settings.DriftVAmplitude;
-            float h = Mathf.Cos(-_driftTimeH) * Ctx.Settings.DriftHAmplitude;
+            float v = _driftTimeV % (2 * Mathf.PI) > Mathf.PI
+                ? Mathf.Sin(-_driftTimeV * Mathf.PI) * Ctx.Settings.DriftVAmplitude1
+                : Mathf.Sin(-_driftTimeV * Mathf.PI) * Ctx.Settings.DriftVAmplitude2;
 
-            Vector3 vOffset = -Ctx.Settings.Gravity.normalized * v;
-            Vector3 hOffset = Ctx.Camera.right.normalized * h;
+            float h = Mathf.Cos(-_driftTimeH * Mathf.PI) * Ctx.Settings.DriftHAmplitude;
+
+            Vector3 vOffset = -Ctx.Motor.CharacterUp.normalized * v;
+            Vector3 hOffset = Ctx.Motor.CharacterRight.normalized * h;
 
             velocity = vOffset + hOffset;
         }
