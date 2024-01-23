@@ -13,6 +13,11 @@ namespace Daze.Player.Avatar
         public KinematicCharacterMotor Motor;
         public Animator Animator;
 
+        public Transform IKLeftHand;
+        public Transform IKRightHand;
+        public Transform IkLeftFoot;
+        public Transform IkRightFoot;
+
         public event Action EnterFallingState;
         public event Action LeaveFallingState;
 
@@ -21,7 +26,11 @@ namespace Daze.Player.Avatar
             PlayerInput input,
             Transform camera,
             KinematicCharacterMotor motor,
-            Animator animator
+            Animator animator,
+            Transform ikLeftHand,
+            Transform ikRightHand,
+            Transform ikLeftFoot,
+            Transform ikRightFoot
         )
         {
             Settings = settings;
@@ -29,6 +38,10 @@ namespace Daze.Player.Avatar
             Camera = camera;
             Motor = motor;
             Animator = animator;
+            IKLeftHand = ikLeftHand;
+            IKRightHand = ikRightHand;
+            IkLeftFoot = ikLeftFoot;
+            IkRightFoot = ikRightFoot;
         }
 
         public void EnterFalling()

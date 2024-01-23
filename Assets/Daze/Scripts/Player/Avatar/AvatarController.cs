@@ -14,7 +14,13 @@ namespace Daze.Player.Avatar
 
         public Transform Body;
         public Animator Animator;
+        public IkController IkController;
         public KinematicCharacterMotor Motor;
+
+        public Transform IkLeftHand;
+        public Transform IkRightHand;
+        public Transform IkLeftFoot;
+        public Transform IkRightFoot;
 
         private Context _ctx;
         private StateMachine<StateType, StateEvent> _fsm;
@@ -35,6 +41,7 @@ namespace Daze.Player.Avatar
             SetupInput();
             SetupContext();
             SetupFms();
+            SetupEvents();
         }
 
         private void SetupInput()
@@ -45,7 +52,17 @@ namespace Daze.Player.Avatar
 
         private void SetupContext()
         {
-            _ctx = new(Settings, Input, Camera, Motor, Animator);
+            _ctx = new(
+                Settings,
+                Input,
+                Camera,
+                Motor,
+                Animator,
+                IkLeftHand,
+                IkRightHand,
+                IkLeftFoot,
+                IkRightFoot
+            );
 
             _ctx.EnterFallingState += () => EnterFallingState?.Invoke();
             _ctx.LeaveFallingState += () => LeaveFallingState?.Invoke();
@@ -56,6 +73,11 @@ namespace Daze.Player.Avatar
             _fsm = new FsmBuilder(_ctx).Make();
 
             _fsm.Init();
+        }
+
+        private void SetupEvents()
+        {
+            IkController.OnAnimatorIk += () => _fsm.OnAction(StateEvent.OnAnimatorIK);
         }
 
         public void Update()

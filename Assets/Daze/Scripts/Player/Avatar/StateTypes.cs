@@ -17,6 +17,7 @@ namespace Daze.Player.Avatar
         FixedUpdate,
         UpdateVelocity,
         UpdateRotation,
-        AfterCharacterUpdate
+        AfterCharacterUpdate,
+        OnAnimatorIK,
     }
 }
