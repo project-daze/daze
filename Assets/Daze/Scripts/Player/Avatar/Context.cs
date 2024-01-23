@@ -18,31 +18,11 @@ namespace Daze.Player.Avatar
         public Transform IkLeftFoot;
         public Transform IkRightFoot;
 
+        public Transform FkUpperArmL;
+        public Transform FkUpperArmR;
+
         public event Action EnterFallingState;
         public event Action LeaveFallingState;
-
-        public Context(
-            PlayerSettings settings,
-            PlayerInput input,
-            Transform camera,
-            KinematicCharacterMotor motor,
-            Animator animator,
-            Transform ikLeftHand,
-            Transform ikRightHand,
-            Transform ikLeftFoot,
-            Transform ikRightFoot
-        )
-        {
-            Settings = settings;
-            Input = input;
-            Camera = camera;
-            Motor = motor;
-            Animator = animator;
-            IKLeftHand = ikLeftHand;
-            IKRightHand = ikRightHand;
-            IkLeftFoot = ikLeftFoot;
-            IkRightFoot = ikRightFoot;
-        }
 
         public void EnterFalling()
         {

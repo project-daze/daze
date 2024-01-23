@@ -59,29 +59,37 @@ namespace Daze.Player.Avatar
 
             Vector3 vOffset = Ctx.Motor.CharacterUp.normalized * v;
             Vector3 hOffset = Ctx.Motor.CharacterRight.normalized * h;
+            // Get the current rotation of the GameObject
+            Vector3 currentRotation = Ctx.FkUpperArmL.rotation.eulerAngles;
+            Ctx.FkUpperArmL.rotation = Quaternion.Euler(currentRotation.x, currentRotation.y + v, currentRotation.z);
 
             velocity = vOffset + hOffset;
         }
 
+        public override void UpdateRotation(ref Quaternion rotation, float deltaTime)
+        {
+
+        }
+
         public override void OnAnimatorIK()
         {
-            Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 0.2f);
-            Ctx.Animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
-            Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.2f);
-            Ctx.Animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
-            Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0.4f);
+            // Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 0.2f);
+            // Ctx.Animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
+            // Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.2f);
+            // Ctx.Animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
+            // Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0.4f);
             // Ctx.Animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 1f);
-            Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0.4f);
+            // Ctx.Animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0.4f);
             // Ctx.Animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 1f);
 
-            Ctx.Animator.SetIKPosition(AvatarIKGoal.LeftHand, Ctx.IKLeftHand.position);
-            Ctx.Animator.SetIKRotation(AvatarIKGoal.LeftHand, Ctx.IKLeftHand.rotation);
-            Ctx.Animator.SetIKPosition(AvatarIKGoal.RightHand, Ctx.IKRightHand.position);
-            Ctx.Animator.SetIKRotation(AvatarIKGoal.RightHand, Ctx.IKRightHand.rotation);
-            Ctx.Animator.SetIKPosition(AvatarIKGoal.LeftFoot, Ctx.IkLeftFoot.position);
-            Ctx.Animator.SetIKRotation(AvatarIKGoal.LeftFoot, Ctx.IkLeftFoot.rotation);
-            Ctx.Animator.SetIKPosition(AvatarIKGoal.RightFoot, Ctx.IkRightFoot.position);
-            Ctx.Animator.SetIKRotation(AvatarIKGoal.RightFoot, Ctx.IkRightFoot.rotation);
+            // Ctx.Animator.SetIKPosition(AvatarIKGoal.LeftHand, Ctx.IKLeftHand.position);
+            // Ctx.Animator.SetIKRotation(AvatarIKGoal.LeftHand, Ctx.IKLeftHand.rotation);
+            // Ctx.Animator.SetIKPosition(AvatarIKGoal.RightHand, Ctx.IKRightHand.position);
+            // Ctx.Animator.SetIKRotation(AvatarIKGoal.RightHand, Ctx.IKRightHand.rotation);
+            // Ctx.Animator.SetIKPosition(AvatarIKGoal.LeftFoot, Ctx.IkLeftFoot.position);
+            // Ctx.Animator.SetIKRotation(AvatarIKGoal.LeftFoot, Ctx.IkLeftFoot.rotation);
+            // Ctx.Animator.SetIKPosition(AvatarIKGoal.RightFoot, Ctx.IkRightFoot.position);
+            // Ctx.Animator.SetIKRotation(AvatarIKGoal.RightFoot, Ctx.IkRightFoot.rotation);
         }
     }
 }
