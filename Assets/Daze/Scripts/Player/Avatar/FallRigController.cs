@@ -4,9 +4,16 @@ namespace Daze.Player.Avatar
 {
     public class FallRig : MonoBehaviour
     {
+        [Header("Body Assignments")]
+
         public Transform Body;
 
         public Transform LeftUpperArmTarget;
+        public Transform RightUpperArmTarget;
+
+        [Header("Settings")]
+
+        public float UpperArmVelocityMultiplier = 50f;
 
         private Vector3 _prevPos;
         private Vector3 _newPos;
@@ -21,13 +28,27 @@ namespace Daze.Player.Avatar
         public void FixedUpdate()
         {
             UpdateVelocity();
+            ControlArms();
+        }
 
-            float z = Mathf.Clamp(_velocity.y * 50f, -45f, 45f);
+        private void ControlArms()
+        {
+            float z = Mathf.Clamp(_velocity.y * UpperArmVelocityMultiplier, -45f, 45f);
 
-            LeftUpperArmTarget.localRotation = Quaternion.Slerp(
-                LeftUpperArmTarget.localRotation,
-                Quaternion.Euler(0, 0, z),
-                5f * Time.deltaTime
+            Rotate(LeftUpperArmTarget, Quaternion.Euler(0, 0, -10 + z), 5f);
+            Rotate(RightUpperArmTarget, Quaternion.Euler(0, 0, 10 + -z), 5f);
+        }
+
+        private void Rotate(
+            Transform bone,
+            Quaternion rotation,
+            float speed
+        )
+        {
+            bone.localRotation = Quaternion.Slerp(
+                bone.localRotation,
+                rotation,
+                speed * Time.deltaTime
             );
         }
 
