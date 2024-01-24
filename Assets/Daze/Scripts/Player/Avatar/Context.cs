@@ -13,14 +13,6 @@ namespace Daze.Player.Avatar
         public KinematicCharacterMotor Motor;
         public Animator Animator;
 
-        public Transform IKLeftHand;
-        public Transform IKRightHand;
-        public Transform IkLeftFoot;
-        public Transform IkRightFoot;
-
-        public Transform FkUpperArmL;
-        public Transform FkUpperArmR;
-
         public event Action EnterFallingState;
         public event Action LeaveFallingState;
 

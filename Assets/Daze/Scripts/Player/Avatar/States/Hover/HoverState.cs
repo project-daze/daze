@@ -59,9 +59,6 @@ namespace Daze.Player.Avatar
 
             Vector3 vOffset = Ctx.Motor.CharacterUp.normalized * v;
             Vector3 hOffset = Ctx.Motor.CharacterRight.normalized * h;
-            // Get the current rotation of the GameObject
-            Vector3 currentRotation = Ctx.FkUpperArmL.rotation.eulerAngles;
-            Ctx.FkUpperArmL.rotation = Quaternion.Euler(currentRotation.x, currentRotation.y + v, currentRotation.z);
 
             velocity = vOffset + hOffset;
         }

@@ -14,24 +14,14 @@ namespace Daze.Player.Avatar
 
         public Transform Body;
         public Animator Animator;
-        public IkController IkController;
+        public FallRig FallRig;
         public KinematicCharacterMotor Motor;
-
-        public Transform IkLeftHand;
-        public Transform IkRightHand;
-        public Transform IkLeftFoot;
-        public Transform IkRightFoot;
-
-        public Transform FkUpperArmL;
-        public Transform FkUpperArmR;
 
         private Context _ctx;
         private StateMachine<StateType, StateEvent> _fsm;
 
         public event Action EnterFallingState;
         public event Action LeaveFallingState;
-
-public float blendWeight = 0.2f;
 
         public void OnAwake(PlayerSettings settings, PlayerInput input, Transform camera)
         {
@@ -46,7 +36,6 @@ public float blendWeight = 0.2f;
             SetupInput();
             SetupContext();
             SetupFms();
-            SetupEvents();
         }
 
         private void SetupInput()
@@ -64,8 +53,6 @@ public float blendWeight = 0.2f;
                 Camera = Camera,
                 Motor = Motor,
                 Animator = Animator,
-                FkUpperArmL = FkUpperArmL,
-                FkUpperArmR = FkUpperArmR,
             };
 
             _ctx.EnterFallingState += () => EnterFallingState?.Invoke();
@@ -79,11 +66,6 @@ public float blendWeight = 0.2f;
             _fsm.Init();
         }
 
-        private void SetupEvents()
-        {
-            IkController.OnAnimatorIk += () => _fsm.OnAction(StateEvent.OnAnimatorIK);
-        }
-
         public void Update()
         {
             _fsm.OnLogic();
@@ -93,33 +75,6 @@ public float blendWeight = 0.2f;
         public void FixedUpdate()
         {
             _fsm.OnAction(StateEvent.FixedUpdate);
-        }
-
-        public void LateUpdate() {
-            // // Calculate the sine wave value based on time
-            // float sinValue = Mathf.Sin(Time.time * 1f) * 10f;
-
-            // // Get the current rotation of the GameObject
-            // Vector3 currentRotation = FkUpperArmL.rotation.eulerAngles;
-
-            // // Update the Y-axis rotation with the sine wave value
-            // FkUpperArmL.rotation = Quaternion.Euler(currentRotation.x + sinValue, currentRotation.y, currentRotation.z);
-
-            // Get the original bone position and rotation from the animation
-            Transform originalBoneTransform = Animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-Debug.Log("-----OOO-----");
-Debug.Log(originalBoneTransform.rotation);
-Debug.Log("-----HHH-----");
-Debug.Log(FkUpperArmL.rotation);
-            // Blend the original position and rotation with the desired bone position and rotation
-            Quaternion blendedRotation = Quaternion.Slerp(
-                originalBoneTransform.rotation,
-                FkUpperArmL.rotation,
-                blendWeight
-            );
-
-            // Apply the blended position and rotation to the bone
-            FkUpperArmL.rotation = blendedRotation;
         }
 
         /// <summary>
