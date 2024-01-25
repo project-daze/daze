@@ -19,6 +19,7 @@ namespace Daze.Player.Avatar
             _isStable = false;
             _driftTimeV = 0f;
             _driftTimeH = 0f;
+            Ctx.FallRig.Enable();
             Ctx.Animator.SetTrigger(_hoverHash);
         }
 

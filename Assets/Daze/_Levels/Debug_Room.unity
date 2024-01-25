@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 498004257}
-  m_IndirectSpecularColor: {r: 0.41221124, g: 0.48929387, b: 0.603334, a: 1}
+  m_IndirectSpecularColor: {r: 0.41206917, g: 0.4891761, b: 0.6032796, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -797,7 +797,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh32512
+  m_Name: pb_Mesh32410
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1593,10 +1593,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7e5ff213cec41aa97bae753e96d7da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Rig: {fileID: 1509046274}
   Body: {fileID: 1857515787}
   LeftUpperArmTarget: {fileID: 1302754610}
   RightUpperArmTarget: {fileID: 1817677135}
+  LeftUpperLegTarget: {fileID: 1302754610}
+  RightUpperLegTarget: {fileID: 1817677135}
   UpperArmVelocityMultiplier: 50
+  UpperArmPositiveBendLimit: {x: 0, y: 0, z: 45}
+  UpperArmNegativeBendLimit: {x: 0, y: 0, z: -45}
+  UpperArmOffset: {x: 0, y: 0, z: 10}
+  UpperArmRotationSpeed: 5
+  UpperLegVelocityMultiplier: 50
+  UpperLegPositiveBendLimit: {x: 0, y: 0, z: 45}
+  UpperLegNegativeBendLimit: {x: 0, y: 0, z: -45}
+  UpperLegOffset: {x: 0, y: 0, z: 0}
+  UpperLegRotationSpeed: 5
 --- !u!4 &1199543947 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6346576110394102535, guid: 7abd8fec276a3464f8f1fce7887cab46, type: 3}
@@ -1746,7 +1758,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh32432
+  m_Name: pb_Mesh32302
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -2217,7 +2229,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh32494
+  m_Name: pb_Mesh32378
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -2824,7 +2836,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh32406
+  m_Name: pb_Mesh32262
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -3578,11 +3590,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8066941218858774387, guid: 6cc84f1a18159449cae67bfdeae3f771, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000029768913
+      value: 0.000000029768913
       objectReference: {fileID: 0}
     - target: {fileID: 8066941218858774387, guid: 6cc84f1a18159449cae67bfdeae3f771, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000014108466
+      value: 0.0000000014108466
       objectReference: {fileID: 0}
     - target: {fileID: 8798581904238606972, guid: 6cc84f1a18159449cae67bfdeae3f771, type: 3}
       propertyPath: m_LocalRotation.x
@@ -3590,11 +3602,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8798581904238606972, guid: 6cc84f1a18159449cae67bfdeae3f771, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 3.983171e-18
+      value: 1.7683905e-15
       objectReference: {fileID: 0}
     - target: {fileID: 8798581904238606972, guid: 6cc84f1a18159449cae67bfdeae3f771, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 5.3858603e-17
+      value: 1.1432744e-16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

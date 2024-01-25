@@ -53,6 +53,7 @@ namespace Daze.Player.Avatar
                 Camera = Camera,
                 Motor = Motor,
                 Animator = Animator,
+                FallRig = FallRig
             };
 
             _ctx.EnterFallingState += () => EnterFallingState?.Invoke();

@@ -19,6 +19,7 @@ namespace Daze.Player.Avatar
         public override void OnEnter()
         {
             Ctx.Motor.SetGroundSolvingActivation(true);
+            Ctx.FallRig.Disable();
 
             Ctx.Input.Jump += Jump;
         }
