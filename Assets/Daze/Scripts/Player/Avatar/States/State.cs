@@ -66,8 +66,5 @@ namespace Daze.Player.Avatar
 
         public virtual void AfterCharacterUpdate(float deltaTime)
         { }
-
-        public virtual void OnAnimatorIK()
-        { }
     }
 }
