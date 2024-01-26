@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -10,9 +11,14 @@ namespace Daze.Player.Avatar.Rigs
         public Transform TargetLeft;
         public Transform TargetRight;
 
-        protected override OverrideTransform[] Rigs()
+        protected override List<OverrideTransform> Rigs()
         {
-            return new OverrideTransform[] { RigLeft, RigRight };
+            return new List<OverrideTransform> { RigLeft, RigRight };
+        }
+
+        protected override List<Transform> Targets()
+        {
+            return new List<Transform> { TargetLeft, TargetRight };
         }
 
         protected override void DoControl(Vector3 velocity)

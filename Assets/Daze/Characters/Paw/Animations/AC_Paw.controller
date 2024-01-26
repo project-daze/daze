@@ -1151,7 +1151,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: cac80cf01d4b548c4896487edcbcfe52, type: 2}
+  m_Motion: {fileID: 7400000, guid: 2d94640ac879d4d31a010417d6a89a54, type: 2}
   m_Tag: 
   m_SpeedParameter: FallX
   m_MirrorParameter: IsGrounded
@@ -2008,7 +2008,7 @@ AnimatorState:
   - {fileID: -865448321091677242}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
+  m_IKOnFeet: 1
   m_WriteDefaultValues: 1
   m_Mirror: 0
   m_SpeedParameterActive: 0
@@ -2392,16 +2392,16 @@ AnimatorStateMachine:
   - {fileID: 5792793944990583108}
   - {fileID: -849908334631345089}
   m_StateMachineTransitions:
-  - first: {fileID: 2655025155581498137}
-    second:
-    - {fileID: -5995112156965633791}
-    - {fileID: 6944280656899824797}
-    - {fileID: -8257225873442818592}
   - first: {fileID: -4734654371686338655}
     second:
     - {fileID: 7690489012588870056}
     - {fileID: 882549838620069503}
     - {fileID: -919630590501814032}
+  - first: {fileID: 2655025155581498137}
+    second:
+    - {fileID: -5995112156965633791}
+    - {fileID: 6944280656899824797}
+    - {fileID: -8257225873442818592}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 50, y: -100, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
@@ -2688,13 +2688,13 @@ AnimatorStateMachine:
   - {fileID: -7895405987916939025}
   m_EntryTransitions: []
   m_StateMachineTransitions:
-  - first: {fileID: 8916597972478557053}
-    second: []
   - first: {fileID: 5717826953314322619}
     second: []
   - first: {fileID: 6128183664828329186}
     second: []
   - first: {fileID: 8622088987670257305}
+    second: []
+  - first: {fileID: 8916597972478557053}
     second: []
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -260, y: 400, z: 0}

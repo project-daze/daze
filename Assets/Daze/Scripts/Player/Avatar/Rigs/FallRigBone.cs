@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -10,15 +11,25 @@ namespace Daze.Player.Avatar.Rigs
         public Vector3 Offset;
         public Vector3 VelocityMultiplier;
 
-        protected OverrideTransform[] _rigs;
+        protected List<OverrideTransform> _rigs = new();
+        protected List<Transform> _targets = new();
 
-        public void Start()
+        public void Awake()
         {
             _rigs = Rigs();
+            _targets = Targets();
             SetWeight();
         }
 
-        protected abstract OverrideTransform[] Rigs();
+        public void ShowMesh(bool show)
+        {
+            foreach (Transform target in _targets) {
+                target.GetComponent<MeshRenderer>().enabled = show;
+            }
+        }
+
+        protected abstract List<OverrideTransform> Rigs();
+        protected abstract List<Transform> Targets();
 
         public void Control(Vector3 velocity)
         {

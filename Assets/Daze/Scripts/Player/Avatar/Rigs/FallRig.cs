@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -7,12 +8,21 @@ namespace Daze.Player.Avatar.Rigs
     {
         public Rig Rig;
         public Transform Body;
-        public FallRigBone UpperAms;
+        public FallRigBone UpperArms;
+        public FallRigBone LowerArms;
         public FallRigBone Hands;
         public FallRigBone UpperLegs;
         public FallRigBone LowerLegs;
 
+        [Header("Settings")]
+
+        public float WeightEnableSpeed = 1f;
+        public float WeightDisableSpeed = 5f;
+
+        public bool DisplayMesh = false;
+
         private Animator _animator;
+        private readonly List<FallRigBone> _bones = new();
 
         private bool _isEnabled = false;
 
@@ -20,28 +30,58 @@ namespace Daze.Player.Avatar.Rigs
         private Vector3 _newPos;
         private Vector3 _velocity;
 
-        public void Start()
+        private void OnValidate()
+        {
+            UnityEditor.EditorApplication.delayCall += DoValidate;
+        }
+
+        private void DoValidate()
+        {
+            UnityEditor.EditorApplication.delayCall -= DoValidate;
+            if (this != null)
+            {
+                ShowMesh();
+            }
+        }
+
+        private void Start()
         {
             _animator = GetComponent<Animator>();
+
+            _bones.Add(UpperArms);
+            _bones.Add(LowerArms);
+            _bones.Add(Hands);
+            _bones.Add(UpperLegs);
+            _bones.Add(LowerLegs);
 
             Rig.weight = 0f;
 
             _prevPos = Body.position;
             _newPos = Body.position;
+
+            ShowMesh();
         }
 
-        public void FixedUpdate()
+        private void FixedUpdate()
         {
             UpdateVelocity();
 
             TransitionRigWeightTo(_isEnabled ? 1f : 0f);
 
             if (Rig.weight > 0) {
-                UpperAms.Control(_velocity);
-                Hands.Control(_velocity);
-                UpperLegs.Control(_velocity);
-                LowerLegs.Control(_velocity);
+                foreach (FallRigBone bone in _bones) {
+                    bone.Control(_velocity);
+                }
             }
+        }
+
+        private void OnAnimatorIK()
+        {
+            float weight = Mathf.Lerp(1f, 0f, Rig.weight);
+            _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, weight);
+            _animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, weight);
+            _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, weight);
+            _animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, weight);
         }
 
         public void Enable()
@@ -58,8 +98,8 @@ namespace Daze.Player.Avatar.Rigs
         {
             if (Rig.weight != to) {
                 Rig.weight = to == 1f
-                    ? Rig.weight + (1f * Time.deltaTime)
-                    : Rig.weight - (5f * Time.deltaTime);
+                    ? Rig.weight + (WeightEnableSpeed * Time.deltaTime)
+                    : Rig.weight - (WeightDisableSpeed * Time.deltaTime);
             }
         }
 
@@ -78,13 +118,11 @@ namespace Daze.Player.Avatar.Rigs
             _prevPos = _newPos;
         }
 
-        public void OnAnimatorIK()
+        private void ShowMesh()
         {
-            float weight = Mathf.Lerp(1f, 0f, Rig.weight);
-            _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, weight);
-            _animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, weight);
-            _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, weight);
-            _animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, weight);
+            foreach (FallRigBone bone in _bones) {
+                bone.ShowMesh(DisplayMesh);
+            }
         }
     }
 }
