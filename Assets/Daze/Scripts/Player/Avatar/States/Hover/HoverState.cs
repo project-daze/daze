@@ -17,7 +17,6 @@ namespace Daze.Player.Avatar
             _isStable = false;
             _driftTimeV = 0f;
             _driftTimeH = 0f;
-            Ctx.FallRig.Enable();
         }
 
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)

@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Daze.Player.Avatar
@@ -18,7 +17,6 @@ namespace Daze.Player.Avatar
             _speed = 0f;
             _timer = 0f;
             Ctx.Motor.SetGroundSolvingActivation(false);
-            Ctx.FallRig.Enable();
         }
 
         /// <summary>
@@ -28,7 +26,8 @@ namespace Daze.Player.Avatar
         /// </summary>
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
-            if (_timer >= Ctx.Settings.LiftTime) {
+            if (_timer >= Ctx.Settings.LiftTime)
+            {
                 State.fsm.StateCanExit();
                 return;
             }

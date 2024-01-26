@@ -15,6 +15,7 @@ namespace Daze.Player.Avatar
         public override void OnTransition()
         {
             Ctx.Animator.SetTrigger(_HoverHash);
+            Ctx.FallRig.Enable();
             Ctx.EnterFalling();
         }
     }
