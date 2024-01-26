@@ -97,11 +97,6 @@ namespace Daze.Player.Avatar
             velocity = data.Velocity;
         }
 
-        public void OnAnimatorIK()
-        {
-            _fsm.OnAction(StateEvent.OnAnimatorIK);
-        }
-
         /// <summary>
         /// This is called by KinematicCharacterMotor during its update cycle.
         /// This is where you tell your character what its rotation should be

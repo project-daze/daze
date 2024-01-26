@@ -50,8 +50,6 @@ namespace Daze.Player.Avatar
             );
 
             State.AddAction<float>(StateEvent.AfterCharacterUpdate, AfterCharacterUpdate);
-
-            State.AddAction(StateEvent.OnAnimatorIK, OnAnimatorIK);
         }
 
         public virtual void Update()
