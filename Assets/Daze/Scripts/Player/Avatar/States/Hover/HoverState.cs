@@ -35,8 +35,6 @@ namespace Daze.Player.Avatar
 
         private void Stabilize(ref Vector3 velocity, float deltaTime)
         {
-            // If the velocity is bigger than 0.5, we will slowdown the player
-            // until it reaches 0.5.
             if (velocity.magnitude > 0.1f)
             {
                 velocity += -velocity.normalized * deltaTime;
@@ -51,11 +49,11 @@ namespace Daze.Player.Avatar
             _driftTimeV += Ctx.Settings.DriftVFrequency * deltaTime;
             _driftTimeH += Ctx.Settings.DriftHFrequency * deltaTime;
 
-            float v = Mathf.Sin(-_driftTimeV) * Ctx.Settings.DriftVAmplitude;
-            float h = Mathf.Cos(-_driftTimeH) * Ctx.Settings.DriftHAmplitude;
+            float v = Mathf.Sin(-_driftTimeV * Mathf.PI) * Ctx.Settings.DriftVAmplitude;
+            float h = Mathf.Cos(-_driftTimeH * Mathf.PI) * Ctx.Settings.DriftHAmplitude;
 
-            Vector3 vOffset = -Ctx.Settings.Gravity.normalized * v;
-            Vector3 hOffset = Ctx.Camera.right.normalized * h;
+            Vector3 vOffset = Ctx.Motor.CharacterUp.normalized * v;
+            Vector3 hOffset = Ctx.Motor.CharacterRight.normalized * h;
 
             velocity = vOffset + hOffset;
         }

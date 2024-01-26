@@ -58,8 +58,8 @@ namespace Daze.Player
 
         [Header("Lift Movement")]
 
-        public float LiftAcceleration = 0.1f;
-        public float LiftTime = 1f;
+        public float LiftAcceleration = 0.08f;
+        public float LiftTime = 0.8f;
 
         // ---------------------------------------------------------------------
         // Drift Movement
@@ -67,10 +67,10 @@ namespace Daze.Player
 
         [Header("Drift Movement")]
 
-        public float DriftVAmplitude = 0.75f;
-        public float DriftVFrequency = 2f;
-        public float DriftHAmplitude = 0.5f;
-        public float DriftHFrequency = 0.5f;
+        public float DriftVAmplitude = 0.25f;
+        public float DriftVFrequency = 0.9f;
+        public float DriftHAmplitude = 0.1f;
+        public float DriftHFrequency = 0.45f;
 
         // ---------------------------------------------------------------------
         // Camera Settings

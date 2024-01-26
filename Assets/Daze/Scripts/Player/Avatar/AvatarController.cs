@@ -2,15 +2,20 @@ using System;
 using UnityEngine;
 using KinematicCharacterController;
 using UnityHFSM;
+using Daze.Player.Avatar.Rigs;
 
 namespace Daze.Player.Avatar
 {
+    [RequireComponent(typeof(KinematicCharacterMotor))]
     public class AvatarController : MonoBehaviour, ICharacterController
     {
         [NonSerialized] public PlayerSettings Settings;
         [NonSerialized] public PlayerInput Input;
         [NonSerialized] public Transform Camera;
 
+        public Transform Body;
+        public Animator Animator;
+        public FallRig FallRig;
         public KinematicCharacterMotor Motor;
 
         private Context _ctx;
@@ -42,7 +47,15 @@ namespace Daze.Player.Avatar
 
         private void SetupContext()
         {
-            _ctx = new(Settings, Input, Camera, Motor);
+            _ctx = new Context
+            {
+                Settings = Settings,
+                Input = Input,
+                Camera = Camera,
+                Motor = Motor,
+                Animator = Animator,
+                FallRig = FallRig
+            };
 
             _ctx.EnterFallingState += () => EnterFallingState?.Invoke();
             _ctx.LeaveFallingState += () => LeaveFallingState?.Invoke();

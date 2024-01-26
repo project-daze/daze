@@ -26,7 +26,8 @@ namespace Daze.Player.Avatar
         /// </summary>
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
-            if (_timer >= Ctx.Settings.LiftTime) {
+            if (_timer >= Ctx.Settings.LiftTime)
+            {
                 State.fsm.StateCanExit();
                 return;
             }

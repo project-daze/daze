@@ -1,6 +1,7 @@
 using System;
 using KinematicCharacterController;
 using UnityEngine;
+using Daze.Player.Avatar.Rigs;
 
 namespace Daze.Player.Avatar
 {
@@ -11,22 +12,11 @@ namespace Daze.Player.Avatar
         public PlayerInput Input;
         public Transform Camera;
         public KinematicCharacterMotor Motor;
+        public Animator Animator;
+        public FallRig FallRig;
 
         public event Action EnterFallingState;
         public event Action LeaveFallingState;
-
-        public Context(
-            PlayerSettings settings,
-            PlayerInput input,
-            Transform camera,
-            KinematicCharacterMotor motor
-        )
-        {
-            Settings = settings;
-            Input = input;
-            Camera = camera;
-            Motor = motor;
-        }
 
         public void EnterFalling()
         {
