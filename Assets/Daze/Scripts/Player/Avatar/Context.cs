@@ -1,6 +1,7 @@
 using System;
 using KinematicCharacterController;
 using UnityEngine;
+using Daze.Player.Avatar.Rigs;
 
 namespace Daze.Player.Avatar
 {

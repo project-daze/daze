@@ -17,7 +17,16 @@ ModelImporter:
     removeConstantScaleCurves: 0
     motionNodeName: 
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'Armature|float_00' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'bn_pelvis' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\t'bn_spine3' is inbetween
+      humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Armature|float_fighting_00' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'bn_pelvis' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\t'bn_spine3' is inbetween humanoid transforms and
+      has rotation animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0

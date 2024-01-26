@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using KinematicCharacterController;
 using UnityHFSM;
+using Daze.Player.Avatar.Rigs;
 
 namespace Daze.Player.Avatar
 {
@@ -94,6 +95,11 @@ namespace Daze.Player.Avatar
             _fsm.OnAction(StateEvent.UpdateVelocity, data);
 
             velocity = data.Velocity;
+        }
+
+        public void OnAnimatorIK()
+        {
+            _fsm.OnAction(StateEvent.OnAnimatorIK);
         }
 
         /// <summary>

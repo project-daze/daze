@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Daze.Player.Avatar
@@ -9,8 +10,6 @@ namespace Daze.Player.Avatar
         private float _speed = 0f;
         private float _timer = 0f;
 
-        private readonly int _hoverHash = Animator.StringToHash("Hover");
-
         public LiftState(Context ctx) : base(ctx)
         { }
 
@@ -20,7 +19,6 @@ namespace Daze.Player.Avatar
             _timer = 0f;
             Ctx.Motor.SetGroundSolvingActivation(false);
             Ctx.FallRig.Enable();
-            Ctx.Animator.SetTrigger(_hoverHash);
         }
 
         /// <summary>
