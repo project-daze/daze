@@ -21,6 +21,8 @@ namespace Daze.Player.Avatar
 
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
+            Ctx.UpdateFallSpeed(velocity.magnitude);
+
             // When entering this state, the player might be moving. So, at
             // first we will stabilize player to slowdown until certain
             // velocity treshold, then move to drifting state.
@@ -37,10 +39,11 @@ namespace Daze.Player.Avatar
         {
             if (velocity.magnitude > 0.1f)
             {
-                velocity += -velocity.normalized * deltaTime;
+                velocity += -velocity.normalized * (Ctx.Settings.FallBrakeSpeed * deltaTime);
                 return;
             }
 
+            Ctx.EnterHovering();
             _isStable = true;
         }
 

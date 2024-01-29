@@ -19,6 +19,8 @@ namespace Daze.Player.Avatar.Rigs
         public float WeightEnableSpeed = 1f;
         public float WeightDisableSpeed = 5f;
 
+        public bool UseManualVelocity = false;
+        public Vector3 ManualVelocity = Vector3.zero;
         public bool DisplayMesh = false;
 
         private Animator _animator;
@@ -70,7 +72,7 @@ namespace Daze.Player.Avatar.Rigs
 
             if (Rig.weight > 0) {
                 foreach (FallRigBone bone in _bones) {
-                    bone.Control(_velocity);
+                    bone.Control(UseManualVelocity ? ManualVelocity : _velocity);
                 }
             }
         }

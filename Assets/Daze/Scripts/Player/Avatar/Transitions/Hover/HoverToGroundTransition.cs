@@ -16,7 +16,8 @@ namespace Daze.Player.Avatar
         {
             Ctx.Animator.SetTrigger(_LandHash);
             Ctx.FallRig.Disable();
-            Ctx.LeaveFalling();
+            Ctx.LeaveFloating();
+            Ctx.LeaveHovering();
         }
     }
 }

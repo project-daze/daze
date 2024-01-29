@@ -11,6 +11,8 @@ namespace Daze.Player.Avatar.Rigs
         public Transform TargetLeft;
         public Transform TargetRight;
 
+        public Vector2 YByZLimit;
+
         protected override List<OverrideTransform> Rigs()
         {
             return new List<OverrideTransform> { RigLeft, RigRight };
@@ -23,8 +25,10 @@ namespace Daze.Player.Avatar.Rigs
 
         protected override void DoControl(Vector3 velocity)
         {
-            Rotate(TargetLeft, Quaternion.Euler(0, 0, -Offset.z));
-            Rotate(TargetRight, Quaternion.Euler(0, 0, Offset.z));
+            float y = Mathf.Clamp(Mathf.Abs(velocity.z) * VelocityMultiplier.y, YByZLimit.x, YByZLimit.y);
+
+            Rotate(TargetLeft, Quaternion.Euler(0, -Offset.y + -y, -Offset.z));
+            Rotate(TargetRight, Quaternion.Euler(0, Offset.y + y, Offset.z));
         }
     }
 }

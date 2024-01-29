@@ -11,6 +11,10 @@ namespace Daze.Player
     /// that component instead of listed here.
     /// </summary>
     public class PlayerState : MonoBehaviour {
+        public bool IsFloating = false;
+        public bool IsHovering = false;
         public bool IsFalling = false;
+
+        public float FallSpeed = 0f;
     }
 }
