@@ -8,11 +8,10 @@ namespace Daze.Player.Avatar.Rigs
     {
         public Rig Rig;
         public Transform Body;
-        public FallRigBone UpperArms;
-        public FallRigBone LowerArms;
-        public FallRigBone Hands;
-        public FallRigBone UpperLegs;
-        public FallRigBone LowerLegs;
+
+        [Header("Bone Assignments")]
+
+        public List<FallRigBone> Bones;
 
         [Header("Settings")]
 
@@ -51,12 +50,6 @@ namespace Daze.Player.Avatar.Rigs
         {
             _animator = GetComponent<Animator>();
 
-            _bones.Add(UpperArms);
-            _bones.Add(LowerArms);
-            _bones.Add(Hands);
-            _bones.Add(UpperLegs);
-            _bones.Add(LowerLegs);
-
             Rig.weight = 0f;
 
             _prevPos = Body.position;
@@ -72,7 +65,7 @@ namespace Daze.Player.Avatar.Rigs
 
             if (Rig.weight > 0)
             {
-                foreach (FallRigBone bone in _bones)
+                foreach (FallRigBone bone in Bones)
                 {
                     bone.Control(
                         UseManualVelocity ? ManualVelocity : _velocity,

@@ -1,21 +1,38 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
 namespace Daze.Player.Avatar.Rigs
 {
-    public abstract class FallRigBone : MonoBehaviour
+    [Serializable]
+    public class FallRigBoneRotationSettings
     {
+        public Vector3 VelocityAxis;
+        public Vector2 Multiplier;
+        public Vector2 CounterThreshold;
+        public Vector2 BendLimit;
+    }
+
+    public class FallRigBone : MonoBehaviour
+    {
+        public OverrideTransform Rig;
+        [NonSerialized] public Transform Target;
+
+        [Header("Base Settings")]
+
         public float Weight;
-        public float RotationSpeed;
         public Vector3 Offset;
-        public Vector3 VelocityMultiplier;
+        public float RotationSpeed;
+
+        [Header("Rotation Settings")]
+
+        public List<FallRigBoneRotationSettings> Z;
+
+        [Header("Noise Settings")]
 
         public Vector2 NoiseSeed;
         public float NoiseScale;
-
-        protected List<OverrideTransform> _rigs = new();
-        protected List<Transform> _targets = new();
 
         protected bool _brakeRequested = false;
         protected bool _isBraking = false;
@@ -25,21 +42,10 @@ namespace Daze.Player.Avatar.Rigs
 
         public void Awake()
         {
-            _rigs = Rigs();
-            _targets = Targets();
+            Target = Rig.data.sourceObject.transform;
+
             InitializeWeight();
             InitializeNoiseSeed();
-        }
-
-        protected abstract List<OverrideTransform> Rigs();
-        protected abstract List<Transform> Targets();
-
-        public void ShowMesh(bool show)
-        {
-            foreach (Transform target in _targets)
-            {
-                target.GetComponent<MeshRenderer>().enabled = show;
-            }
         }
 
         public void Control(Vector3 velocity, Vector3 acceleration)
@@ -48,11 +54,11 @@ namespace Daze.Player.Avatar.Rigs
             // higher magnitude. Ths is so that when decelerating, the bones
             // should get higher impact on its pose.
 
-            if (!_brakeRequested)
-            {
-                DoControl(velocity);
-            }
-            else
+            // if (!_brakeRequested)
+            // {
+            //     // DoControl(velocity);
+            // }
+            // else
             {
                 if (!_isBraking)
                 {
@@ -66,7 +72,7 @@ namespace Daze.Player.Avatar.Rigs
                 if (!_isBrakeReached)
                 {
                     _currentBrake = Vector3.Lerp(_currentBrake, _brakeStart, Time.fixedDeltaTime * 10f);
-                    DoControl(_currentBrake);
+                    // DoControl(_currentBrake);
 
                     if (_currentBrake.magnitude > _brakeStart.magnitude * 0.99f)
                     {
@@ -76,7 +82,7 @@ namespace Daze.Player.Avatar.Rigs
                 else
                 {
                     _currentBrake = Vector3.Lerp(_currentBrake, Vector3.zero, Time.fixedDeltaTime * 5f);
-                    DoControl(_currentBrake);
+                    // DoControl(_currentBrake);
 
                     if (_currentBrake.magnitude < 1f)
                     {
@@ -86,28 +92,50 @@ namespace Daze.Player.Avatar.Rigs
                 }
             }
 
-            // Add noise to the weight of FK blend to make the movement more
-            // random and interesting.
+            AddRotation(velocity);
             AddNoise(velocity);
         }
 
-        /// <summary>
-        /// Control the actual bone movement. Each sub class should define
-        /// how to control the bone precisely.
-        /// </summary>
-        protected abstract void DoControl(Vector3 velocity);
-
-        public void Break()
+        private void AddRotation(Vector3 velocity)
         {
-            Debug.Log("Break Requested");
-            _brakeRequested = true;
+            Quaternion rotation = Quaternion.Euler(
+                0f,
+                0f,
+                GetRotationValueFor(velocity, Z)
+            );
+
+            Target.localRotation = Quaternion.Slerp(
+                Target.localRotation,
+                rotation,
+                RotationSpeed * Time.fixedDeltaTime
+            );
+        }
+
+        private float GetRotationValueFor(
+            Vector3 velocity,
+            List<FallRigBoneRotationSettings> settings
+        )
+        {
+            float value = 0f;
+
+            foreach (FallRigBoneRotationSettings s in settings)
+            {
+                value = GetRotationValue(
+                    GetVelocityAxisFromSettings(velocity, s),
+                    s.Multiplier,
+                    s.CounterThreshold,
+                    s.BendLimit
+                );
+            }
+
+            return value;
         }
 
         /// <summary>
         /// Get the value based on the current velocity and the settings. This
         /// value will be used to rotate the bone via `Rotate` function later.
         /// </summary>
-        protected float Value(
+        protected float GetRotationValue(
             float velocity,
             Vector2 multiplier,
             Vector2 counterThreshold,
@@ -156,34 +184,45 @@ namespace Daze.Player.Avatar.Rigs
             return v * normalizedVelocity;
         }
 
-        protected void Rotate(Transform bone, Quaternion rotation)
+        private float GetVelocityAxisFromSettings(
+            Vector3 velocity,
+            FallRigBoneRotationSettings settings
+        )
         {
-            bone.localRotation = Quaternion.Slerp(
-                bone.localRotation,
-                rotation,
-                RotationSpeed * Time.fixedDeltaTime
-            );
+            if (settings.VelocityAxis.x != 0)
+            {
+                return velocity.x * settings.VelocityAxis.x;
+            }
+            else if (settings.VelocityAxis.y != 0)
+            {
+                return velocity.y * settings.VelocityAxis.y;
+            }
+            else if (settings.VelocityAxis.z != 0)
+            {
+                return velocity.z * settings.VelocityAxis.z;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         protected void InitializeWeight()
         {
-            foreach (OverrideTransform rig in _rigs)
-            {
-                rig.weight = Weight;
-            }
+            Rig.weight = Weight;
         }
 
         private void InitializeNoiseSeed()
         {
-            NoiseSeed = new Vector2(Random.Range(0f, 100f), Random.Range(0f, 100f));
+            // NoiseSeed = new Vector2(Random.Range(0f, 100f), Random.Range(0f, 100f));
         }
 
         private void AddNoise(Vector3 velocity)
         {
-            for (int i = 0; i < _rigs.Count; i++)
+            // for (int i = 0; i < _rigs.Count; i++)
             {
-                float seed = i == 0 ? NoiseSeed.x : NoiseSeed.y;
-                float noise = CreateNoise(velocity, seed);
+                // float seed = i == 0 ? NoiseSeed.x : NoiseSeed.y;
+                // float noise = CreateNoise(velocity, seed);
 
                 // _rigs[i].weight = Mathf.Lerp(_rigs[i].weight, Weight + noise, 1f * Time.fixedDeltaTime);
             }
@@ -194,6 +233,17 @@ namespace Daze.Player.Avatar.Rigs
             float noise = Mathf.PerlinNoise(Time.time * NoiseScale, seed) - 0.5f;
 
             return Mathf.Lerp(0f, noise, Mathf.InverseLerp(5f, 15f, velocity.magnitude));
+        }
+
+        public void Break()
+        {
+            Debug.Log("Break Requested");
+            _brakeRequested = true;
+        }
+
+        public void ShowMesh(bool show)
+        {
+            Target.GetComponent<MeshRenderer>().enabled = show;
         }
     }
 }
