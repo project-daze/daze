@@ -44,9 +44,13 @@ namespace Daze.Player.Avatar
 
         private void Stabilize(ref Vector3 velocity, float deltaTime)
         {
-            if (velocity.magnitude > 0.1f)
+            if (velocity.magnitude > 0.05f)
             {
-                velocity += -velocity.normalized * (Ctx.Settings.LiftBrakeSpeed * deltaTime);
+                velocity = Vector3.Lerp(
+                    velocity,
+                    Vector3.zero,
+                    Ctx.Settings.LiftBrakeSpeed * deltaTime
+                );
                 return;
             }
 

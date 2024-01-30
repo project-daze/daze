@@ -16,8 +16,8 @@ namespace Daze.Player.Avatar.Rigs
 
         [Header("Settings")]
 
-        public float WeightEnableSpeed = 1f;
-        public float WeightDisableSpeed = 5f;
+        public float WeightEnableSpeed;
+        public float WeightDisableSpeed;
 
         public bool UseManualVelocity = false;
         public Vector3 ManualVelocity = Vector3.zero;
@@ -29,8 +29,9 @@ namespace Daze.Player.Avatar.Rigs
         private bool _isEnabled = false;
 
         private Vector3 _prevPos;
-        private Vector3 _newPos;
         private Vector3 _velocity;
+        private Vector3 _prevVelocity;
+        private Vector3 _acceleration;
 
         private void OnValidate()
         {
@@ -59,7 +60,6 @@ namespace Daze.Player.Avatar.Rigs
             Rig.weight = 0f;
 
             _prevPos = Body.position;
-            _newPos = Body.position;
 
             ShowMesh();
         }
@@ -70,9 +70,14 @@ namespace Daze.Player.Avatar.Rigs
 
             TransitionRigWeightTo(_isEnabled ? 1f : 0f);
 
-            if (Rig.weight > 0) {
-                foreach (FallRigBone bone in _bones) {
-                    bone.Control(UseManualVelocity ? ManualVelocity : _velocity);
+            if (Rig.weight > 0)
+            {
+                foreach (FallRigBone bone in _bones)
+                {
+                    bone.Control(
+                        UseManualVelocity ? ManualVelocity : _velocity,
+                        UseManualVelocity ? ManualVelocity : _acceleration
+                    );
                 }
             }
         }
@@ -96,9 +101,18 @@ namespace Daze.Player.Avatar.Rigs
             _isEnabled = false;
         }
 
+        public void Break()
+        {
+            foreach (FallRigBone bone in _bones)
+            {
+                bone.Break();
+            }
+        }
+
         private void TransitionRigWeightTo(float to)
         {
-            if (Rig.weight != to) {
+            if (Rig.weight != to)
+            {
                 Rig.weight = to == 1f
                     ? Rig.weight + (WeightEnableSpeed * Time.deltaTime)
                     : Rig.weight - (WeightDisableSpeed * Time.deltaTime);
@@ -111,18 +125,18 @@ namespace Daze.Player.Avatar.Rigs
         /// </summary>
         private void UpdateVelocity()
         {
-            _newPos = Body.position;
-
-            Vector3 worldVelocity = (_newPos - _prevPos) / Time.fixedDeltaTime;
+            Vector3 worldVelocity = (Body.position - _prevPos) / Time.fixedDeltaTime;
             Vector3 localVelocity = Body.InverseTransformDirection(worldVelocity);
             _velocity = localVelocity;
-
-            _prevPos = _newPos;
+            _acceleration = _velocity - _prevVelocity;
+            _prevPos = Body.position;
+            _prevVelocity = localVelocity;
         }
 
         private void ShowMesh()
         {
-            foreach (FallRigBone bone in _bones) {
+            foreach (FallRigBone bone in _bones)
+            {
                 bone.ShowMesh(DisplayMesh);
             }
         }
