@@ -68,6 +68,7 @@ namespace Daze.Player
 
         [Header("Drift Movement")]
 
+        public float DriftEnterMagnitude = 0.1f;
         public float DriftVAmplitude = 0.25f;
         public float DriftVFrequency = 0.9f;
         public float DriftHAmplitude = 0.1f;

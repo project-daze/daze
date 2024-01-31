@@ -16,6 +16,7 @@ namespace Daze.Player.Avatar
         {
             _speed = 0f;
             _timer = 0f;
+            Ctx.Settings.Gravity = -Ctx.Settings.Gravity;
             Ctx.Motor.SetGroundSolvingActivation(false);
         }
 
@@ -27,34 +28,16 @@ namespace Daze.Player.Avatar
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
             if (_timer < Ctx.Settings.LiftTime)
-            {
                 Lift(ref velocity, deltaTime);
-                return;
-            }
-
-            Stabilize(ref velocity, deltaTime);
+            else
+                State.fsm.StateCanExit();
         }
 
         private void Lift(ref Vector3 velocity, float deltaTime)
         {
             _timer += deltaTime;
             _speed += Ctx.Settings.LiftAcceleration;
-            velocity = -Ctx.Settings.Gravity * (_speed * deltaTime);
-        }
-
-        private void Stabilize(ref Vector3 velocity, float deltaTime)
-        {
-            if (velocity.magnitude > 0.05f)
-            {
-                velocity = Vector3.Lerp(
-                    velocity,
-                    Vector3.zero,
-                    Ctx.Settings.LiftBrakeSpeed * deltaTime
-                );
-                return;
-            }
-
-            State.fsm.StateCanExit();
+            velocity = Ctx.Settings.Gravity * (_speed * deltaTime);
         }
 
         public override bool CanExit()
