@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Cinemachine;
+using Daze.Player.Support;
 
 namespace Daze.Player.Camera
 {
@@ -13,33 +14,62 @@ namespace Daze.Player.Camera
         public Transform Main;
         public CinemachineFreeLook Look;
         public CinemachineVirtualCamera Free;
+        public CinemachineTransposer FreeTransposer;
 
         public Transform LookFollowTarget;
         public Transform FreeFollowTarget;
         public Transform Avatar;
+
+        private float _freeDamping = 0f;
+        private float _freeFollowOffset = 0f;
 
         public void OnAwake(PlayerSettings settings, PlayerInput input, PlayerState state)
         {
             Settings = settings;
             Input = input;
             State = state;
+
+            FreeTransposer = Free.GetCinemachineComponent<CinemachineTransposer>();
         }
 
         public void LateUpdate()
         {
-            // If player falling state and active camera do not match, start
-            // transitioning to the correct camera.
+            HandleTransition();
+            SyncFollowTargetPosition();
+            UpdateRotation();
+            UpdateDampings();
+            UpdateFollowOffset();
+        }
+
+        /// <summary>
+        /// If player falling state and active camera do not match, start
+        /// transitioning to the correct camera.
+        /// </summary>
+        private void HandleTransition()
+        {
             if (ShouldTransition())
             {
+                ResetDampingValue();
                 Look.gameObject.SetActive(!Look.gameObject.activeSelf);
             }
+        }
 
-            // Sync follow target position with the player position.
+        private bool IsLookActive()
+        {
+            return Look.gameObject.activeSelf;
+        }
+
+        private bool ShouldTransition()
+        {
+            if (State.IsFloating && IsLookActive()) return true;
+            if (!State.IsFloating && !IsLookActive()) return true;
+            return false;
+        }
+
+        private void SyncFollowTargetPosition()
+        {
             LookFollowTarget.transform.position = Avatar.position;
             FreeFollowTarget.transform.position = Avatar.position;
-
-            // Update camera rotation.
-            UpdateRotation();
         }
 
         /// <summary>
@@ -67,16 +97,97 @@ namespace Daze.Player.Camera
             FreeFollowTarget.Rotate(x, y, 0f);
         }
 
-        private bool IsLookActive()
+        private void UpdateDampings()
         {
-            return Look.gameObject.activeSelf;
+            UpdateDampingValue();
+            FreeTransposer.m_XDamping = _freeDamping;
+            FreeTransposer.m_YDamping = _freeDamping;
+            FreeTransposer.m_ZDamping = _freeDamping;
         }
 
-        private bool ShouldTransition()
+        private void UpdateDampingValue()
         {
-            if (State.IsFalling && IsLookActive()) return true;
-            if (!State.IsFalling && !IsLookActive()) return true;
-            return false;
+            if (ShouldDamp())
+            {
+                AddDampingValue();
+            }
+            else
+            {
+                RemoveDampingValue();
+            }
+        }
+
+        private void AddDampingValue()
+        {
+            _freeDamping = _freeDamping < 4.9f
+                ? Mathf.Lerp(_freeDamping, 5f, 1f * Time.deltaTime)
+                : 5f;
+        }
+
+        private void RemoveDampingValue()
+        {
+            _freeDamping = _freeDamping > 0.01f
+                ? Mathf.Lerp(_freeDamping, 0f, 5f * Time.deltaTime)
+                : 0f;
+        }
+
+        private void ResetDampingValue()
+        {
+            _freeDamping = 0f;
+        }
+
+        /// <summary>
+        /// Check if the free camera should add dampings. The damping should
+        /// be added when the character is on hover state.
+        /// </summary>
+        private bool ShouldDamp()
+        {
+            return State.IsFloating && State.IsHovering;
+        }
+
+        private void UpdateFollowOffset()
+        {
+            UpdateFollowOffsetValue();
+            FreeTransposer.m_FollowOffset.z = _freeFollowOffset;
+        }
+
+        private void UpdateFollowOffsetValue()
+        {
+            // If the camera should not offset, reduce the offset to its
+            // default value.
+            if (!ShouldOffset())
+            {
+                ReduceFollowOffset();
+                return;
+            }
+
+            // Otherwise, offset camera based on the fall speed.
+            _freeFollowOffset = Utils.LinearMap(
+                State.FallSpeed,
+                Settings.FreeCameraOffsetMinFallSpeed,
+                Settings.MaxFallSpeed,
+                Settings.FreeCameraMinOffset,
+                Settings.FreeCameraMaxOffset
+            );
+
+            _freeFollowOffset = Mathf.Lerp(
+                _freeFollowOffset,
+                Settings.FreeCameraMaxOffset,
+                Settings.FreeCameraOffsetTransitionSpeed * Time.deltaTime
+            );
+        }
+
+        private void ReduceFollowOffset()
+        {
+            _freeFollowOffset = _freeFollowOffset < (Settings.FreeCameraMinOffset + -0.01f)
+                ? Mathf.Lerp(_freeFollowOffset, Settings.FreeCameraMinOffset, Settings.FreeCameraOffsetReduceSpeed * Time.deltaTime)
+                : Settings.FreeCameraMinOffset;
+        }
+
+        private bool ShouldOffset()
+        {
+            return State.IsFloating
+                && (State.FallSpeed > Settings.FreeCameraOffsetMinFallSpeed);
         }
     }
 }

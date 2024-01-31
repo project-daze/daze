@@ -19,7 +19,7 @@ namespace Daze.Fsm
         public TStateId Name;
         public State<TStateId, TEvent> State;
         public virtual bool NeedsExitTime { get => false; }
-        public bool IsGhostState;
+        public virtual bool IsGhostState { get => false; }
         public ITimer Timer;
 
         public virtual State<TStateId, TEvent> Make()

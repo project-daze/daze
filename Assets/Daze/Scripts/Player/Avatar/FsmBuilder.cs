@@ -18,6 +18,7 @@ namespace Daze.Player.Avatar
             fsm.AddState(StateType.Ground, new GroundState(Ctx).Make());
             fsm.AddState(StateType.Lift, new LiftState(Ctx).Make());
             fsm.AddState(StateType.Hover, new HoverState(Ctx).Make());
+            fsm.AddState(StateType.Fall, new FallState(Ctx).Make());
 
             fsm.SetStartState(StateType.Ground);
 
@@ -52,6 +53,22 @@ namespace Daze.Player.Avatar
             fsm.AddTriggerTransition(
                 StateEvent.GravityOff,
                 new HoverToGroundTransition(Ctx).Make()
+            );
+
+            // Hover -> Fall: On Input GravityOn.
+            fsm.AddTriggerTransition(
+                StateEvent.GravityOn,
+                new HoverToFallTransition(Ctx).Make()
+            );
+
+            // -----------------------------------------------------------------
+            // Fall Transitions
+            // -----------------------------------------------------------------
+
+            // Fall -> Hover: On Input GravityOn.
+            fsm.AddTriggerTransition(
+                StateEvent.GravityOn,
+                new FallToHoverTransition(Ctx).Make()
             );
 
             return fsm;

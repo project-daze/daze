@@ -16,7 +16,7 @@ namespace Daze.Player.Avatar
         {
             Ctx.Animator.SetTrigger(_HoverHash);
             Ctx.FallRig.Enable();
-            Ctx.EnterFalling();
+            Ctx.EnterFloating();
         }
     }
 }

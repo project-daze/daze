@@ -21,27 +21,31 @@ namespace Daze.Player.Avatar
 
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
+            Ctx.UpdateFallSpeed(velocity.magnitude);
+
             // When entering this state, the player might be moving. So, at
             // first we will stabilize player to slowdown until certain
             // velocity treshold, then move to drifting state.
             if (!_isStable)
-            {
                 Stabilize(ref velocity, deltaTime);
-                return;
-            }
-
-            Drift(ref velocity, deltaTime);
+            else
+                Drift(ref velocity, deltaTime);
         }
 
         private void Stabilize(ref Vector3 velocity, float deltaTime)
         {
-            if (velocity.magnitude > 0.1f)
+            if (velocity.magnitude > Ctx.Settings.DriftEnterMagnitude)
             {
-                velocity += -velocity.normalized * deltaTime;
+                velocity = Vector3.Lerp(
+                    velocity,
+                    Vector3.zero,
+                    Ctx.Settings.FallBrakeSpeed * deltaTime
+                );
                 return;
             }
 
             _isStable = true;
+            Ctx.EnterHovering();
         }
 
         private void Drift(ref Vector3 velocity, float deltaTime)
@@ -52,8 +56,20 @@ namespace Daze.Player.Avatar
             float v = Mathf.Sin(-_driftTimeV * Mathf.PI) * Ctx.Settings.DriftVAmplitude;
             float h = Mathf.Cos(-_driftTimeH * Mathf.PI) * Ctx.Settings.DriftHAmplitude;
 
-            Vector3 vOffset = Ctx.Motor.CharacterUp.normalized * v;
-            Vector3 hOffset = Ctx.Motor.CharacterRight.normalized * h;
+            // For vertial movement, we use the current gravity direction.
+            Vector3 vOffset = Ctx.Settings.Gravity.normalized * v;
+
+            // For horizontal movement, we use the character's current "right",
+            // but if that angle is too close to the gravity direction, we will
+            // use the "forward" instead.
+            float angle = Vector3.Angle(
+                Ctx.Settings.Gravity.normalized,
+                Ctx.Motor.CharacterRight.normalized
+            );
+
+            Vector3 hOffset = Mathf.Abs(angle) < 20f
+                ? Ctx.Motor.CharacterForward.normalized * h
+                : Ctx.Motor.CharacterRight.normalized * h;
 
             velocity = vOffset + hOffset;
         }

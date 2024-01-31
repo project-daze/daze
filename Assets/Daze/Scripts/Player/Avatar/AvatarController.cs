@@ -21,8 +21,14 @@ namespace Daze.Player.Avatar
         private Context _ctx;
         private StateMachine<StateType, StateEvent> _fsm;
 
+        public event Action EnterFloatingState;
+        public event Action LeaveFloatingState;
         public event Action EnterFallingState;
         public event Action LeaveFallingState;
+        public event Action EnterHoveringState;
+        public event Action LeaveHoveringState;
+
+        public event Action<float> FallSpeedUpdated;
 
         public void OnAwake(PlayerSettings settings, PlayerInput input, Transform camera)
         {
@@ -57,8 +63,14 @@ namespace Daze.Player.Avatar
                 FallRig = FallRig
             };
 
+            _ctx.EnterFloatingState += () => EnterFloatingState?.Invoke();
+            _ctx.LeaveFloatingState += () => LeaveFloatingState?.Invoke();
             _ctx.EnterFallingState += () => EnterFallingState?.Invoke();
             _ctx.LeaveFallingState += () => LeaveFallingState?.Invoke();
+            _ctx.EnterHoveringState += () => EnterHoveringState?.Invoke();
+            _ctx.LeaveHoveringState += () => LeaveHoveringState?.Invoke();
+
+            _ctx.FallSpeedUpdated += (speed) => FallSpeedUpdated?.Invoke(speed);
         }
 
         private void SetupFms()

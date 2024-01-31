@@ -60,6 +60,7 @@ namespace Daze.Player
 
         public float LiftAcceleration = 0.08f;
         public float LiftTime = 0.8f;
+        public float LiftBrakeSpeed = 1f;
 
         // ---------------------------------------------------------------------
         // Drift Movement
@@ -67,10 +68,21 @@ namespace Daze.Player
 
         [Header("Drift Movement")]
 
+        public float DriftEnterMagnitude = 0.1f;
         public float DriftVAmplitude = 0.25f;
         public float DriftVFrequency = 0.9f;
         public float DriftHAmplitude = 0.1f;
         public float DriftHFrequency = 0.45f;
+
+        // ---------------------------------------------------------------------
+        // Fall Movement
+        // ---------------------------------------------------------------------
+
+        [Header("Fall Movement")]
+
+        public float FallAcceleration = 5f;
+        public float MaxFallSpeed = 15f;
+        public float FallBrakeSpeed = 10f;
 
         // ---------------------------------------------------------------------
         // Camera Settings
@@ -79,5 +91,10 @@ namespace Daze.Player
         [Header("Free Camera Settings")]
 
         public float FreeCameraRotationSpeed = 200f;
+        public float FreeCameraMinOffset = -2f;
+        public float FreeCameraMaxOffset = -4f;
+        public float FreeCameraOffsetMinFallSpeed = 0.5f;
+        public float FreeCameraOffsetTransitionSpeed = 1f;
+        public float FreeCameraOffsetReduceSpeed = 5f;
     }
 }
