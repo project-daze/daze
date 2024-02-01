@@ -10103,7 +10103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 0, z: -5}
+  m_FollowOffset: {x: 0, y: 0, z: -2.8}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -36447,7 +36447,6 @@ MonoBehaviour:
   Main: {fileID: 4231901180757301228}
   Look: {fileID: 341871501649881752}
   Free: {fileID: 3700194010496881806}
-  FreeTransposer: {fileID: 0}
   LookFollowTarget: {fileID: 6757596912115245168}
   FreeFollowTarget: {fileID: 8134692578697652221}
   Avatar: {fileID: 4607211364810963487}
@@ -41570,8 +41569,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4772258668931082161}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.007754754, y: 0.034089174, z: 0.00026451485, w: -0.9993887}
-  m_LocalPosition: {x: 0, y: 0, z: -5}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: -1}
+  m_LocalPosition: {x: 0, y: 0, z: -2.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -41602,7 +41601,7 @@ MonoBehaviour:
   m_Follow: {fileID: 6757596912115245168}
   m_CommonLens: 1
   m_Lens:
-    FieldOfView: 40
+    FieldOfView: 51
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -41674,11 +41673,11 @@ MonoBehaviour:
   m_BindingMode: 1
   m_SplineCurvature: 1
   m_Orbits:
-  - m_Height: 5
+  - m_Height: 3
     m_Radius: 1.25
   - m_Height: 0
-    m_Radius: 5
-  - m_Height: -5
+    m_Radius: 2.8
+  - m_Height: -3
     m_Radius: 1.25
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
@@ -41822,7 +41821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 0, z: -5}
+  m_FollowOffset: {x: 0, y: 0, z: -2.8}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -77184,7 +77183,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6488392188187109957}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.03956518, y: 0.034038424, z: 0.001878005, w: 0.99863535}
+  m_LocalRotation: {x: -0.017848613, y: 3.5363626e-20, z: -4.937412e-19, w: 0.99984074}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -77220,7 +77219,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 40
+    FieldOfView: 51
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -77379,7 +77378,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6657976840531966235}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.03956518, y: 0.034038424, z: 0.001878005, w: 0.99863535}
+  m_LocalRotation: {x: -0.017848613, y: -1.110223e-16, z: 5.930324e-26, w: 0.99984074}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -77415,7 +77414,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 40
+    FieldOfView: 51
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -82388,7 +82387,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 0, z: -5}
+  m_FollowOffset: {x: 0, y: 0, z: -2.8}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -82544,7 +82543,7 @@ Transform:
   m_GameObject: {fileID: 7652062477012113788}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.47500002, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -82606,7 +82605,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7713046919265216703}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.03956518, y: 0.034038424, z: 0.001878005, w: 0.99863535}
+  m_LocalRotation: {x: -0.01784861, y: 0.0000000018623486, z: 3.3245632e-11, w: 0.99984074}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -82642,7 +82641,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 40
+    FieldOfView: 51
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -82955,8 +82954,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8627100954446828183}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.047340173, y: 0.000000014867036, z: 7.0459805e-10, w: -0.99887884}
-  m_LocalPosition: {x: 0, y: 0, z: -5}
+  m_LocalRotation: {x: 0.017848613, y: -3.5363626e-20, z: 4.937412e-19, w: -0.99984074}
+  m_LocalPosition: {x: 0, y: 0, z: -2.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -82996,7 +82995,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 40
+  field of view: 51
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -83042,7 +83041,7 @@ MonoBehaviour:
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
-    m_Time: 1
+    m_Time: 2
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -93591,8 +93590,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &7684843820828821387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93612,8 +93609,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &8669406612517577595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93633,8 +93628,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &7679009221199030069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93654,8 +93647,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &2240404096890153093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93675,8 +93666,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &907334530376993946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93696,8 +93685,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &2652097562022049620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93717,8 +93704,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &4484710702445459214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93742,8 +93727,6 @@ MonoBehaviour:
     Multiplier: {x: 60, y: 60}
     CounterThreshold: {x: 20, y: 20}
     BendLimit: {x: 45, y: 45}
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &6109494213226896257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93763,8 +93746,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &8211579801047705766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93784,8 +93765,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &3006418216842125370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93805,8 +93784,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &2880513631759281940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93830,8 +93807,6 @@ MonoBehaviour:
     Multiplier: {x: 60, y: 60}
     CounterThreshold: {x: 20, y: 20}
     BendLimit: {x: 45, y: 45}
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &9014998761095006649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93851,8 +93826,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &3829063842573673181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93872,8 +93845,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &843508122508415311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93901,8 +93872,6 @@ MonoBehaviour:
     Multiplier: {x: 10, y: 10}
     CounterThreshold: {x: 5, y: 5}
     BendLimit: {x: 15, y: 15}
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &3986443708841135228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93922,8 +93891,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &3529340393752120346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93943,8 +93910,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &3455181294430277242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93972,8 +93937,6 @@ MonoBehaviour:
     Multiplier: {x: 10, y: 10}
     CounterThreshold: {x: 5, y: 5}
     BendLimit: {x: 15, y: 15}
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &6659667845880482708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93993,8 +93956,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!114 &2747819316673366332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94014,8 +93975,6 @@ MonoBehaviour:
   X: []
   Y: []
   Z: []
-  NoiseSeed: {x: 0, y: 0}
-  NoiseScale: 0
 --- !u!4 &4098295649174784739 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 164678164430182442, guid: b6de8215c68954217b4ead6eb167abab, type: 3}
