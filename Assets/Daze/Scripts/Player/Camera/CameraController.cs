@@ -14,7 +14,7 @@ namespace Daze.Player.Camera
         public Transform Main;
         public CinemachineFreeLook Look;
         public CinemachineVirtualCamera Free;
-        public CinemachineTransposer FreeTransposer;
+        [NonSerialized] public CinemachineTransposer FreeTransposer;
 
         public Transform LookFollowTarget;
         public Transform FreeFollowTarget;
