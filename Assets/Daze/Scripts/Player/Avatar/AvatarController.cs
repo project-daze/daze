@@ -21,6 +21,8 @@ namespace Daze.Player.Avatar
         private Context _ctx;
         private StateMachine<StateType, StateEvent> _fsm;
 
+        public event Action EnterJumpingState;
+        public event Action LeaveJumpingState;
         public event Action EnterFloatingState;
         public event Action LeaveFloatingState;
         public event Action EnterFallingState;
@@ -63,6 +65,8 @@ namespace Daze.Player.Avatar
                 FallRig = FallRig
             };
 
+            _ctx.EnterJumpingState += () => EnterJumpingState?.Invoke();
+            _ctx.LeaveJumpingState += () => LeaveJumpingState?.Invoke();
             _ctx.EnterFloatingState += () => EnterFloatingState?.Invoke();
             _ctx.LeaveFloatingState += () => LeaveFloatingState?.Invoke();
             _ctx.EnterFallingState += () => EnterFallingState?.Invoke();

@@ -16,12 +16,23 @@ namespace Daze.Player.Camera
         public CinemachineVirtualCamera Free;
         [NonSerialized] public CinemachineTransposer FreeTransposer;
 
+        public Transform LookCore;
         public Transform LookFollowTarget;
+        public Transform LookLookAtTarget;
         public Transform FreeFollowTarget;
         public Transform Avatar;
 
         private float _freeDamping = 0f;
         private float _freeFollowOffset = 0f;
+
+        private Vector3 _v = Vector3.zero;
+
+        private Vector3 _prevPos;
+        private Vector3 _velocity;
+
+        private float _timer = 0f;
+        private bool _start = false;
+        private float _py = 0f;
 
         public void OnAwake(PlayerSettings settings, PlayerInput input, PlayerState state)
         {
@@ -68,8 +79,90 @@ namespace Daze.Player.Camera
 
         private void SyncFollowTargetPosition()
         {
-            LookFollowTarget.transform.position = Avatar.position;
-            FreeFollowTarget.transform.position = Avatar.position;
+            // LookFollowTarget.transform.position = Avatar.position;
+            // FreeFollowTarget.transform.position = Avatar.position;
+
+            // Vector3 currentPos = LookFollowTarget.position;
+
+            // float y = Mathf.SmoothDamp(
+            //     currentPos.y,
+            //     Avatar.position.y,
+            //     ref _v,
+            //     0.9f
+            // );
+
+            // float y = Mathf.SmoothStep(
+            //     currentPos.y,
+            //     Avatar.position.y,
+            //     2f * Time.deltaTime
+            // );
+
+            // float y = Mathf.Lerp(
+            //     currentPos.y,
+            //     Avatar.position.y,
+            //     0.9f * Time.deltaTime
+            // );
+
+            if (LookCore.position.y == _py)
+            {
+                _timer = 0f;
+            }
+            else
+            {
+                _timer += Time.deltaTime;
+            }
+
+            if (_timer > 1f)
+            {
+                _start = true;
+            }
+
+            _py = LookCore.position.y;
+
+            UpdateVelocity();
+
+            if (_velocity != Vector3.zero)
+            {
+                LookCore.Translate(_velocity * 0.2f * Time.deltaTime);
+            }
+            else
+            {
+                LookCore.position = Vector3.MoveTowards(
+                    LookCore.position,
+                    Avatar.position,
+                    0.02f * Time.deltaTime
+                );
+            }
+
+
+            // LookCore.Translate(_v * Time.deltaTime);
+            // LookFollowTarget.position = Vector3.Lerp(
+            //     LookFollowTarget.position,
+            //     LookCore.position,
+            //     0.6f * Time.deltaTime
+            // );
+
+            // if (_start)
+            // {
+                LookFollowTarget.position = Vector3.Lerp(
+                    LookFollowTarget.position,
+                    LookCore.position,
+                    0.9f * Time.deltaTime
+                );
+            // }
+            // else
+            // {
+            // }
+            // LookFollowTarget.position = LookCore.position;
+
+            // if (Mathf.Abs(LookFollowTarget.position.y - LookCore.position.y) < 0.01f)
+            // {
+            //     _start = false;
+            // }
+
+            // LookFollowTarget.position = LookCore.position;
+
+            LookLookAtTarget.position = LookFollowTarget.position + new Vector3(0, 0.5f, 0);
         }
 
         /// <summary>
@@ -188,6 +281,14 @@ namespace Daze.Player.Camera
         {
             return State.IsFloating
                 && (State.FallSpeed > Settings.FreeCameraOffsetMinFallSpeed);
+        }
+
+        private void UpdateVelocity()
+        {
+            Vector3 worldVelocity = (Avatar.position - _prevPos) / Time.fixedDeltaTime;
+            Vector3 localVelocity = Avatar.InverseTransformDirection(worldVelocity);
+            _velocity = localVelocity;
+            _prevPos = Avatar.position;
         }
     }
 }

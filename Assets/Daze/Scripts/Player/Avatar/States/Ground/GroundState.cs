@@ -50,6 +50,7 @@ namespace Daze.Player.Avatar
         /// </summary>
         public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
+            // Debug.Log(velocity);
             // If the character is on the ground and stable, add normal
             // velocity to move the character.
             //

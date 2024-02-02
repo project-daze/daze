@@ -18,6 +18,8 @@ namespace Daze.Player
             Avatar.OnAwake(Settings, Input, Camera.Main);
             Camera.OnAwake(Settings, Input, State);
 
+            Avatar.EnterJumpingState += () => State.IsJumping = true;
+            Avatar.LeaveJumpingState += () => State.IsJumping = false;
             Avatar.EnterFloatingState += () => State.IsFloating = true;
             Avatar.LeaveFloatingState += () => State.IsFloating = false;
             Avatar.EnterFallingState += () => State.IsFalling = true;
