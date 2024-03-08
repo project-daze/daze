@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 0
   m_Settings:
-    AOMethod: 1
+    AOMethod: 0
     Downsample: 0
     AfterOpaque: 0
     Source: 1
     NormalSamples: 2
-    Intensity: 2
-    DirectLightingStrength: 0.25
-    Radius: 0.25
+    Intensity: 1
+    DirectLightingStrength: 0
+    Radius: 1
     Samples: 0
-    BlurQuality: 0
-    Falloff: 500
+    BlurQuality: 1
+    Falloff: 150
     SampleCount: -1
   m_BlueNoise256Textures:
   - {fileID: 2800000, guid: 36f118343fc974119bee3d09e2111500, type: 3}
@@ -76,7 +76,7 @@ MonoBehaviour:
   - {fileID: -7896895786025958375}
   - {fileID: -161956099163099848}
   m_RendererFeatureMap: 19c4a4451f97689238ed2c30c99dc0fd
-  m_UseNativeRenderPass: 1
+  m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
@@ -111,7 +111,7 @@ MonoBehaviour:
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
   m_RenderingMode: 2
-  m_DepthPrimingMode: 2
-  m_CopyDepthMode: 2
+  m_DepthPrimingMode: 1
+  m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 1
