@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using Cinemachine;
+using Unity.Cinemachine;
 using Daze.Player.Support;
 
 namespace Daze.Player.Camera
@@ -12,8 +12,8 @@ namespace Daze.Player.Camera
         [NonSerialized] public PlayerState State;
 
         public Transform Main;
-        public CinemachineFreeLook Look;
-        public CinemachineVirtualCamera Free;
+        public CinemachineCamera Look;
+        public CinemachineCamera Free;
         [NonSerialized] public CinemachineTransposer FreeTransposer;
 
         public Transform LookFollowTarget;
@@ -29,7 +29,7 @@ namespace Daze.Player.Camera
             Input = input;
             State = state;
 
-            FreeTransposer = Free.GetCinemachineComponent<CinemachineTransposer>();
+            // FreeTransposer = Free.GetCinemachineComponent<CinemachineTransposer>();
         }
 
         public void LateUpdate()

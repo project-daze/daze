@@ -22,7 +22,7 @@ Join our Discord server for discussion.
 
 We are looking for almost all kinds of contributors.
 
-- Unity version: `2023.1.10f1`
+- Unity version: `Unity 6: 6000.0.27f1 LTS`
 
 ### Style Guide
 
