@@ -61,16 +61,19 @@ namespace Daze.Player.Camera
         /// The target's last local Y position . This is used to calculate the
         /// target's current speed which is stored in `TargetYSpeed`.
         /// </summary>
-        private float LastTargetLocalPositionY;
+        private Vector3 LastTargetLocalPosition;
 
         private float TimeSinceLastTargetStopped;
+
+        private Vector3 LastVelocity;
 
         /// <summary>
         /// Initialize the target position on start.
         /// </summary>
         public void Start()
         {
-            LastTargetLocalPositionY = Target.localPosition.y;
+            LastVelocity = Vector3.zero;
+            LastTargetLocalPosition = Target.localPosition;
         }
 
         /// <summary>
@@ -80,36 +83,40 @@ namespace Daze.Player.Camera
         /// </summary>
         public void LateUpdate()
         {
-            UpdateTargetSpeedAndPosition();
-            UpdatePosition();
-        }
+            // Calculate Target's movement vector since the last frame.
+            Vector3 targetMovement = Target.position - LastTargetLocalPosition;
 
-        /// <summary>
-        /// Update the target's speed and position.
-        /// </summary>
-        private void UpdateTargetSpeedAndPosition()
-        {
-            float targetVelocity = (Target.localPosition.y - LastTargetLocalPositionY) / Time.deltaTime;
+            // Get the surface normal of the target.
+            Vector3 surfaceNormal = transform.up;
 
-            TargetLocalVelocityY = Mathf.Abs(targetVelocity) < 0.1f ? 0 : targetVelocity;
+            // Project Target's movement onto the ground plane and extract
+            // the vertical movement.
+            Vector3 groundMovement = Vector3.ProjectOnPlane(targetMovement, surfaceNormal);
+            Vector3 verticalMovement = Vector3.Project(targetMovement, surfaceNormal);
 
-            LastTargetLocalPositionY = Target.localPosition.y;
-        }
+            // Scale the vertical movement.
+            Vector3 scaledVerticalMovement = verticalMovement * 0.2f;
 
-        /// <summary>
-        /// Update the camera target's position to sync with the target. But,
-        /// apply damping on local Y axis to make the camera movement match GR.
-        /// </summary>
-        private void UpdatePosition()
-        {
-            Vector3 newLocalPosition = transform.localPosition;
+            if (scaledVerticalMovement.magnitude > 0.001f)
+            {
+                verticalMovement = scaledVerticalMovement;
+            }
+            else
+            {
+                Vector3 m = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)) * (Damping * Time.deltaTime);
 
-            newLocalPosition.x = Target.localPosition.x;
-            newLocalPosition.z = Target.localPosition.z;
+                verticalMovement = Vector3.Lerp(LastVelocity, m, 0.5f * Time.deltaTime);
+            }
 
-            newLocalPosition.y = GetNewLocalPositionY(newLocalPosition);
+            // verticalMovement = scaledVerticalMovement;
 
-            transform.localPosition = newLocalPosition;
+            // Combine ground and scaled vertical movement then apply to the
+            // object position.
+            transform.position += groundMovement + verticalMovement;
+
+            // Update the previous position of B for the next frame.
+            LastTargetLocalPosition = Target.position;
+            LastVelocity = verticalMovement;
         }
 
         /// <summary>
@@ -121,7 +128,7 @@ namespace Daze.Player.Camera
             float ss = Mathf.Clamp(s, -0.5f, 0.5f);
 
             float sss = TargetLocalVelocityY * 0.2f * Time.deltaTime;
-Debug.Log("s: " + s + ", ss: " + ss + ", sss: " + sss);
+            Debug.Log("s: " + s + ", ss: " + ss + ", sss: " + sss);
             if (Mathf.Abs(sss) > Mathf.Abs(ss))
             {
                 return localPosition.y + sss;
