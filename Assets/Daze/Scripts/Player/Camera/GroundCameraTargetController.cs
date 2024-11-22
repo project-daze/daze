@@ -67,6 +67,10 @@ namespace Daze.Player.Camera
 
         private Vector3 LastVelocity;
 
+        private float LastDistance;
+
+        private Vector3 VVV = Vector3.zero;
+
         /// <summary>
         /// Initialize the target position on start.
         /// </summary>
@@ -75,6 +79,20 @@ namespace Daze.Player.Camera
             LastVelocity = Vector3.zero;
             LastTargetLocalPosition = Target.localPosition;
         }
+
+private Vector3 previousTargetPosition;
+private Vector3 smoothedTargetVelocity;
+
+public float BlendFactor = 0.5f;
+public float CurrentMove = 0f;
+public float MoveFactor = 0.5f;
+public float ApproachSpeed = 0.5f;
+
+public float CurrentDistance = 0f;
+
+public float DampDistance = 0.5f;
+
+private float PV = 0.0001f;
 
         /// <summary>
         /// Update the camera target's position and rotation. Doing this in
@@ -94,30 +112,54 @@ namespace Daze.Player.Camera
             Vector3 groundMovement = Vector3.ProjectOnPlane(targetMovement, surfaceNormal);
             Vector3 verticalMovement = Vector3.Project(targetMovement, surfaceNormal);
 
-            // Scale the vertical movement.
-            Vector3 scaledVerticalMovement = verticalMovement * 0.2f;
+CurrentMove = verticalMovement.magnitude;
 
-            if (scaledVerticalMovement.magnitude > 0.001f)
-            {
-                verticalMovement = scaledVerticalMovement;
-            }
-            else
-            {
-                Vector3 m = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)) * (Damping * Time.deltaTime);
+            float distance = Vector3.Distance(Vector3.Project(Target.position, surfaceNormal), Vector3.Project(transform.position, surfaceNormal));
+CurrentDistance = distance;
 
-                verticalMovement = Vector3.Lerp(LastVelocity, m, 0.5f * Time.deltaTime);
-            }
+            Vector3 reducedVerticalMovement = verticalMovement * MoveFactor;
 
-            // verticalMovement = scaledVerticalMovement;
+            float newDistance = Vector3.Distance(Vector3.Project(Target.position, surfaceNormal), Vector3.Project(transform.position, surfaceNormal) + reducedVerticalMovement);
+
+            // float am;
+            // if (newDistance > distance)
+            // {
+            //     reducedVerticalMovement = Vector3.zero;
+            //     Damping = 1f;
+            // }
+            // else
+            // {
+            //     Damping = 0f;
+            // }
+
+            Vector3 mmm = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)) * Damping * Time.deltaTime;
+
+            // float approachSpeed = Mathf.Lerp(0, ApproachSpeed * am, distance / DampDistance);
+            // Vector3 approachDirection = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)).normalized * approachSpeed;
+
+            float blend = Mathf.Clamp01(verticalMovement.magnitude / 0.04f);
+            verticalMovement = Vector3.Lerp(mmm, reducedVerticalMovement, blend);
 
             // Combine ground and scaled vertical movement then apply to the
             // object position.
-            transform.position += groundMovement + verticalMovement;
+            transform.position += groundMovement + verticalMovement ;
 
             // Update the previous position of B for the next frame.
             LastTargetLocalPosition = Target.position;
             LastVelocity = verticalMovement;
+            LastDistance = distance;
         }
+
+            // if (scaledVerticalMovement.magnitude > 0.001f)
+            // {
+            //     verticalMovement = scaledVerticalMovement;
+            // }
+            // else
+            // {
+            //     Vector3 m = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)) * (Damping * Time.deltaTime);
+
+            //     // verticalMovement = Vector3.Lerp(LastVelocity, m, 0.5f * Time.deltaTime);
+            // }
 
         /// <summary>
         /// Set the Y axis position on given new local position.
