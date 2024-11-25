@@ -1,4 +1,6 @@
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 namespace Daze.Player.Camera
 {
@@ -40,7 +42,7 @@ namespace Daze.Player.Camera
         /// The damping factor for the camera movement on Y axis.
         /// </summary>
         [Tooltip("The damping factor for the camera movement on Y axis.")]
-        public float Damping = 5f;
+        public float Damping = 1f;
 
         /// <summary>
         /// The padding relative to the screen on Y axis that is treated as
@@ -61,9 +63,11 @@ namespace Daze.Player.Camera
         /// The target's last local Y position . This is used to calculate the
         /// target's current speed which is stored in `TargetYSpeed`.
         /// </summary>
-        private Vector3 LastTargetLocalPosition;
+        private Vector3 LastTargetPosition;
 
-        private float TimeSinceLastTargetStopped;
+        private Vector3 LastPosition;
+
+        private float TimeSinceLastTargetStopped = 0f;
 
         private Vector3 LastVelocity;
 
@@ -77,11 +81,9 @@ namespace Daze.Player.Camera
         public void Start()
         {
             LastVelocity = Vector3.zero;
-            LastTargetLocalPosition = Target.localPosition;
+            LastPosition = Vector3.Project(Target.position, transform.up);
+            LastTargetPosition = Target.position;
         }
-
-private Vector3 previousTargetPosition;
-private Vector3 smoothedTargetVelocity;
 
 public float BlendFactor = 0.5f;
 public float CurrentMove = 0f;
@@ -92,7 +94,13 @@ public float CurrentDistance = 0f;
 
 public float DampDistance = 0.5f;
 
-private float PV = 0.0001f;
+public float maxSpeed = 0f;
+public float minSpeed = 0f;
+public float maxFollowSpeed = 0f;
+
+public float MoveAheadAwayDistance = -2f;
+public float MoveAheadCloserDistance = 2f;
+public float MoveAheadDistanceSpeedFactor = 15f;
 
         /// <summary>
         /// Update the camera target's position and rotation. Doing this in
@@ -101,65 +109,113 @@ private float PV = 0.0001f;
         /// </summary>
         public void LateUpdate()
         {
-            // Calculate Target's movement vector since the last frame.
-            Vector3 targetMovement = Target.position - LastTargetLocalPosition;
+            // Calculate Target's velocity by comparing to the ast frame.
+            Vector3 targetVelocity = (Target.position - LastTargetPosition) / Time.deltaTime;
 
-            // Get the surface normal of the target.
+            // Get the current surface normal. This can be current "up" because
+            // the camera target is going to be rotated when the target is
+            // standing on a wall.
             Vector3 surfaceNormal = transform.up;
 
-            // Project Target's movement onto the ground plane and extract
-            // the vertical movement.
-            Vector3 groundMovement = Vector3.ProjectOnPlane(targetMovement, surfaceNormal);
-            Vector3 verticalMovement = Vector3.Project(targetMovement, surfaceNormal);
+            // Get target's ground position (x and z axis). This value will be
+            // applied to the camera target's position directly since we don't
+            // add any damping on x and z axis movement.
+            Vector3 targetGroundPosition = Vector3.ProjectOnPlane(Target.position, surfaceNormal);
 
-CurrentMove = verticalMovement.magnitude;
+            // Get the vertical position, and the velocity of the vertical
+            // movement of the target.
+            Vector3 verticalPosition = Vector3.Project(transform.position, surfaceNormal);
+            Vector3 targetVerticalPosition = Vector3.Project(Target.position, surfaceNormal);
+            Vector3 targetVerticalVelocity = Vector3.Project(targetVelocity, surfaceNormal);
 
-            float distance = Vector3.Distance(Vector3.Project(Target.position, surfaceNormal), Vector3.Project(transform.position, surfaceNormal));
-CurrentDistance = distance;
+            if (maxSpeed < targetVerticalVelocity.magnitude) {
+                maxSpeed = targetVerticalVelocity.magnitude;
+            }
+            if (minSpeed > targetVerticalVelocity.magnitude) {
+                minSpeed = targetVerticalVelocity.magnitude;
+            }
 
-            Vector3 reducedVerticalMovement = verticalMovement * MoveFactor;
+            // Get the distance between the target's vertical position and the
+            // camera target's vertical position. Use this to determine if the
+            // target is moving away from the camera target or closer to it.
+            // float distance = Vector3.Distance(verticalPosition, targetVerticalPosition);
 
-            float newDistance = Vector3.Distance(Vector3.Project(Target.position, surfaceNormal), Vector3.Project(transform.position, surfaceNormal) + reducedVerticalMovement);
+            // If the target is moving on vertical axis, move the camera
+            // target a bit further to make the camera movement smoother.
+            // Vector3 newVerticalPosition = verticalPosition + targetVerticalVelocity * 0.2f;
 
-            // float am;
-            // if (newDistance > distance)
+            // if (targetVerticalVelocity.magnitude > 0.01f)
             // {
-            //     reducedVerticalMovement = Vector3.zero;
-            //     Damping = 1f;
+                // float moveAheadDistance = distance >= LastDistance ? MoveAheadAwayDistance : MoveAheadCloserDistance;
+                // float dynamicLeadDistance = Mathf.Clamp(targetVerticalVelocity.magnitude / MoveAheadDistanceSpeedFactor * moveAheadDistance, 0, moveAheadDistance);
+
+                // newTargetVerticalPosition = targetVerticalPosition + targetVerticalVelocity.normalized * dynamicLeadDistance;
+            // }
+
+            // Move the vertical position toward the target's vertical position
+            // with damping to make the camera movement smooth.
+            Vector3 newVerticalPosition = Vector3.Lerp(
+                verticalPosition,
+                verticalPosition + targetVerticalVelocity * 0.2f,
+                Damping * Time.deltaTime
+            );
+
+            // Vector3 movementVector = newVerticalPosition - verticalPosition;
+            // float moveDistance = movementVector.magnitude;
+            // float maxDistanceThisFrame = 0.6f * Time.deltaTime;
+
+            // if (maxFollowSpeed < moveDistance) {
+            //     maxFollowSpeed = moveDistance;
+            // }
+
+            // if (moveDistance > maxDistanceThisFrame) {
+            //     newVerticalPosition = verticalPosition + movementVector.normalized * maxDistanceThisFrame;
             // }
             // else
             // {
-            //     Damping = 0f;
+            //     newVerticalPosition = verticalPosition + movementVector;
             // }
 
-            Vector3 mmm = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)) * Damping * Time.deltaTime;
+            // if (targetVerticalVelocity.magnitude > 0.01f)
+            // {
+                // if (distance >= LastDistance)
+                // {
+                //     LastPosition += targetVerticalVelocity * 0.5f * Time.deltaTime;
+                //     newVerticalPosition = Vector3.Lerp(
+                //         verticalPosition,
+                //         LastPosition,
+                //         Damping * Time.deltaTime
+                //     );
+                // }
+                // else
+                // {
+                //     LastPosition += targetVerticalVelocity * 0.5f * Time.deltaTime;
+                //     newVerticalPosition = Vector3.Lerp(
+                //         verticalPosition,
+                //         LastPosition,
+                //         Damping * Time.deltaTime
+                //     );
+                // }
+            // }
+            // else if (TimeSinceLastTargetStopped > 0.1f)
+            // {
+            //     newVerticalPosition = Vector3.Lerp(
+            //         verticalPosition,
+            //         targetVerticalPosition,
+            //         Damping * Time.deltaTime
+            //     );
+            // }
 
-            // float approachSpeed = Mathf.Lerp(0, ApproachSpeed * am, distance / DampDistance);
-            // Vector3 approachDirection = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)).normalized * approachSpeed;
+            // Combine ground and calculated vertical position then apply to
+            // the object position.
+            transform.position = targetGroundPosition + newVerticalPosition;
 
-            float blend = Mathf.Clamp01(verticalMovement.magnitude / 0.04f);
-            verticalMovement = Vector3.Lerp(mmm, reducedVerticalMovement, blend);
-
-            // Combine ground and scaled vertical movement then apply to the
-            // object position.
-            transform.position += groundMovement + verticalMovement ;
-
-            // Update the previous position of B for the next frame.
-            LastTargetLocalPosition = Target.position;
-            LastVelocity = verticalMovement;
-            LastDistance = distance;
+            // Record target's position and distance for the next frame.
+            // LastPosition = newVerticalPosition;
+            LastTargetPosition = Target.position;
+            LastVelocity = targetVerticalPosition;
+            // LastDistance = distance;
         }
-
-            // if (scaledVerticalMovement.magnitude > 0.001f)
-            // {
-            //     verticalMovement = scaledVerticalMovement;
-            // }
-            // else
-            // {
-            //     Vector3 m = (Vector3.Project(Target.position, surfaceNormal) - Vector3.Project(transform.position, surfaceNormal)) * (Damping * Time.deltaTime);
-
-            //     // verticalMovement = Vector3.Lerp(LastVelocity, m, 0.5f * Time.deltaTime);
-            // }
 
         /// <summary>
         /// Set the Y axis position on given new local position.

@@ -269,7 +269,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60.000004
+    FieldOfView: 60
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -331,7 +331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TargetOffset: {x: 0, y: -2.95, z: 0}
   TrackerSettings:
-    BindingMode: 3
+    BindingMode: 1
     PositionDamping: {x: 0, y: 0, z: 0}
     AngularDampingMode: 0
     RotationDamping: {x: 0, y: 0, z: 0}
@@ -1072,6 +1072,18 @@ MonoBehaviour:
   TargetFeet: {fileID: 1032106844}
   Damping: 1
   HardLimitY: 32
+  BlendFactor: 1
+  CurrentMove: 0
+  MoveFactor: 0.5
+  ApproachSpeed: 0.5
+  CurrentDistance: 0
+  DampDistance: 5
+  maxSpeed: 0
+  minSpeed: 10
+  maxFollowSpeed: 0
+  MoveAheadAwayDistance: 0
+  MoveAheadCloserDistance: 4
+  MoveAheadDistanceSpeedFactor: 10
 --- !u!1 &910353168
 GameObject:
   m_ObjectHideFlags: 0
@@ -3096,7 +3108,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8137579552591700445, guid: 6cc84f1a18159449cae67bfdeae3f771, type: 3}
       propertyPath: field of view
-      value: 60.000004
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 8137579552591700445, guid: 6cc84f1a18159449cae67bfdeae3f771, type: 3}
       propertyPath: far clip plane
