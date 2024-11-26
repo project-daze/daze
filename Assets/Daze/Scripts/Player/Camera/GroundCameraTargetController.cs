@@ -1,16 +1,21 @@
-using Unity.Cinemachine;
+using System;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 
 namespace Daze.Player.Camera
 {
     /// <summary>
     /// This class is responsible for controlling the object that ground camera
     /// targets. It will follow specified target (usually the player's avatar)
-    /// but with damping on Y axis to make the camera movement match GR.
+    /// but with damping on Y axis (relative to the current gravity direction)
+    /// to make the camera movement match GR.
     /// </summary>
     public class GroundCameraTargetController : MonoBehaviour
     {
+        /// <summary>
+        /// The playes state.
+        /// </summary>
+        [NonSerialized] public PlayerState PlayerState;
+
         /// <summary>
         /// The main camera that is used to check if the target is going out
         /// of the screen.
@@ -39,68 +44,69 @@ namespace Daze.Player.Camera
         public Transform TargetFeet;
 
         /// <summary>
-        /// The damping factor for the camera movement on Y axis.
+        /// The ground state damping factor for the camera movement. The higher
+        /// the value, the faster the camera will follow the target.
         /// </summary>
-        [Tooltip("The damping factor for the camera movement on Y axis.")]
-        public float Damping = 1f;
+        [Tooltip("The ground state damping factor for the camera movement. The higher the value, the faster the camera will follow the target.")]
+        public float GroundStateDamping = 0.6f;
 
         /// <summary>
-        /// The padding relative to the screen on Y axis that is treated as
-        /// hard limit. If the target goes out of this limit, the camera
-        /// target will accelerate to follow the target.
+        /// The jump state damping factor for the camera movement. The lower
+        /// the value, the faster the camera will follow the target since it
+        /// uses the `SmoothDamp` function.
         /// </summary>
-        [Tooltip("The hard limit area on Y axis relative to the screen.")]
-        public float HardLimitY = 32;
+        [Tooltip("The jump state damping factor for the camera movement. The lower the value, the faster the camera will follow the target.")]
+        public float JumpStateDamping = 0.6f;
 
         /// <summary>
-        /// The target's current speed on Y axis. This is used to move camera
-        /// target at the same speed as the target when the target is going out
-        /// of the screen.
+        /// The velocity multiplier for the target's current velocity.
         /// </summary>
-        private float TargetLocalVelocityY;
+        [Tooltip("The velocity multiplier for the target's current velocity.")]
+        public float JumpStateVelocityMultiplier = 0.1f;
 
         /// <summary>
-        /// The target's last local Y position . This is used to calculate the
-        /// target's current speed which is stored in `TargetYSpeed`.
+        /// The padding on top of the screen on that is treated as hard limit.
+        /// If the target goes out of this limit, the camera target will
+        /// accelerate to follow the target.
         /// </summary>
-        private Vector3 LastTargetPosition;
+        [Tooltip("The hard limit area on top of the screen.")]
+        public float HardLimitTop = 32;
 
-        private Vector3 LastPosition;
+        /// <summary>
+        /// The padding on bottom of the screen on that is treated as hard
+        /// limit. If the target goes out of this limit, the camera target
+        /// will accelerate to follow the target.
+        /// </summary>
+        [Tooltip("The hard limit area on top of the screen.")]
+        public float HardLimitBottom = 32;
 
-        private float TimeSinceLastTargetStopped = 0f;
+        /// <summary>
+        /// The target's position at last frame. This is used to calculate the
+        /// target's current velocity.
+        /// </summary>
+        private Vector3 _lastTargetPosition;
 
-        private Vector3 LastVelocity;
+        /// <summary>
+        /// The current velocity used in `SmoothDamp` function during the
+        /// jump state camera movement.
+        /// </summary>
+        private Vector3 _jumpStateVelocity = Vector3.zero;
 
-        private float LastDistance;
-
-        private Vector3 VVV = Vector3.zero;
+        /// <summary>
+        /// Awake hook to set the player state from the parent.
+        /// </summary>
+        public void OnAwake(PlayerState state)
+        {
+            PlayerState = state;
+        }
 
         /// <summary>
         /// Initialize the target position on start.
         /// </summary>
         public void Start()
         {
-            LastVelocity = Vector3.zero;
-            LastPosition = Vector3.Project(Target.position, transform.up);
-            LastTargetPosition = Target.position;
+            _lastTargetPosition = Target.position;
         }
-
-public float BlendFactor = 0.5f;
-public float CurrentMove = 0f;
-public float MoveFactor = 0.5f;
-public float ApproachSpeed = 0.5f;
-
-public float CurrentDistance = 0f;
-
-public float DampDistance = 0.5f;
-
-public float maxSpeed = 0f;
-public float minSpeed = 0f;
-public float maxFollowSpeed = 0f;
-
-public float MoveAheadAwayDistance = -2f;
-public float MoveAheadCloserDistance = 2f;
-public float MoveAheadDistanceSpeedFactor = 15f;
 
         /// <summary>
         /// Update the camera target's position and rotation. Doing this in
@@ -109,13 +115,43 @@ public float MoveAheadDistanceSpeedFactor = 15f;
         /// </summary>
         public void LateUpdate()
         {
-            // Calculate Target's velocity by comparing to the ast frame.
-            Vector3 targetVelocity = (Target.position - LastTargetPosition) / Time.deltaTime;
+            UpdateRotation();
+            UpdatePosition();
+        }
+
+        /// <summary>
+        /// Update the rotation of the camera. The camera rotation will always
+        /// be the same as the target's rotation only on "roll" axis.
+        /// </summary>
+        private void UpdateRotation()
+        {
+            Quaternion targetRotation = Target.rotation;
+
+            // Extract only the X and Z components of the rotation
+            Vector3 targetEulerAngles = targetRotation.eulerAngles;
+
+            // Keep Object A's current Y rotation
+            Vector3 newEulerAngles = new(targetEulerAngles.x, transform.rotation.eulerAngles.y, targetEulerAngles.z);
+
+            // Apply the new rotation to Object A
+            transform.rotation = Quaternion.Euler(newEulerAngles);
+        }
+
+        /// <summary>
+        /// Update the position of the camera.
+        /// </summary>
+        private void UpdatePosition()
+        {
+            // Get target's velocity by comparing to the last frame position.
+            Vector3 targetVelocity = (Target.position - _lastTargetPosition) / Time.deltaTime;
 
             // Get the current surface normal. This can be current "up" because
-            // the camera target is going to be rotated when the target is
-            // standing on a wall.
+            // the camera target will always be rotated in the correct
+            // direction to match the gravity.
             Vector3 surfaceNormal = transform.up;
+
+            // Get the vertical position of the camera target.
+            Vector3 verticalPosition = Vector3.Project(transform.position, surfaceNormal);
 
             // Get target's ground position (x and z axis). This value will be
             // applied to the camera target's position directly since we don't
@@ -124,150 +160,81 @@ public float MoveAheadDistanceSpeedFactor = 15f;
 
             // Get the vertical position, and the velocity of the vertical
             // movement of the target.
-            Vector3 verticalPosition = Vector3.Project(transform.position, surfaceNormal);
             Vector3 targetVerticalPosition = Vector3.Project(Target.position, surfaceNormal);
             Vector3 targetVerticalVelocity = Vector3.Project(targetVelocity, surfaceNormal);
 
-            if (maxSpeed < targetVerticalVelocity.magnitude) {
-                maxSpeed = targetVerticalVelocity.magnitude;
-            }
-            if (minSpeed > targetVerticalVelocity.magnitude) {
-                minSpeed = targetVerticalVelocity.magnitude;
-            }
-
-            // Get the distance between the target's vertical position and the
-            // camera target's vertical position. Use this to determine if the
-            // target is moving away from the camera target or closer to it.
-            // float distance = Vector3.Distance(verticalPosition, targetVerticalPosition);
-
-            // If the target is moving on vertical axis, move the camera
-            // target a bit further to make the camera movement smoother.
-            // Vector3 newVerticalPosition = verticalPosition + targetVerticalVelocity * 0.2f;
-
-            // if (targetVerticalVelocity.magnitude > 0.01f)
-            // {
-                // float moveAheadDistance = distance >= LastDistance ? MoveAheadAwayDistance : MoveAheadCloserDistance;
-                // float dynamicLeadDistance = Mathf.Clamp(targetVerticalVelocity.magnitude / MoveAheadDistanceSpeedFactor * moveAheadDistance, 0, moveAheadDistance);
-
-                // newTargetVerticalPosition = targetVerticalPosition + targetVerticalVelocity.normalized * dynamicLeadDistance;
-            // }
-
-            // Move the vertical position toward the target's vertical position
-            // with damping to make the camera movement smooth.
-            Vector3 newVerticalPosition = Vector3.Lerp(
+            // Gte the new vertical position based on the current state.
+            Vector3 newVerticalPosition = GetVerticalPosition(
                 verticalPosition,
-                verticalPosition + targetVerticalVelocity * 0.2f,
-                Damping * Time.deltaTime
+                targetVerticalPosition,
+                targetVerticalVelocity
             );
-
-            // Vector3 movementVector = newVerticalPosition - verticalPosition;
-            // float moveDistance = movementVector.magnitude;
-            // float maxDistanceThisFrame = 0.6f * Time.deltaTime;
-
-            // if (maxFollowSpeed < moveDistance) {
-            //     maxFollowSpeed = moveDistance;
-            // }
-
-            // if (moveDistance > maxDistanceThisFrame) {
-            //     newVerticalPosition = verticalPosition + movementVector.normalized * maxDistanceThisFrame;
-            // }
-            // else
-            // {
-            //     newVerticalPosition = verticalPosition + movementVector;
-            // }
-
-            // if (targetVerticalVelocity.magnitude > 0.01f)
-            // {
-                // if (distance >= LastDistance)
-                // {
-                //     LastPosition += targetVerticalVelocity * 0.5f * Time.deltaTime;
-                //     newVerticalPosition = Vector3.Lerp(
-                //         verticalPosition,
-                //         LastPosition,
-                //         Damping * Time.deltaTime
-                //     );
-                // }
-                // else
-                // {
-                //     LastPosition += targetVerticalVelocity * 0.5f * Time.deltaTime;
-                //     newVerticalPosition = Vector3.Lerp(
-                //         verticalPosition,
-                //         LastPosition,
-                //         Damping * Time.deltaTime
-                //     );
-                // }
-            // }
-            // else if (TimeSinceLastTargetStopped > 0.1f)
-            // {
-            //     newVerticalPosition = Vector3.Lerp(
-            //         verticalPosition,
-            //         targetVerticalPosition,
-            //         Damping * Time.deltaTime
-            //     );
-            // }
 
             // Combine ground and calculated vertical position then apply to
             // the object position.
             transform.position = targetGroundPosition + newVerticalPosition;
 
-            // Record target's position and distance for the next frame.
-            // LastPosition = newVerticalPosition;
-            LastTargetPosition = Target.position;
-            LastVelocity = targetVerticalPosition;
-            // LastDistance = distance;
+            // Record target's position for the next frame.
+            _lastTargetPosition = Target.position;
         }
 
         /// <summary>
-        /// Set the Y axis position on given new local position.
+        /// Get the vertical position based on the current state.
         /// </summary>
-        private float GetNewLocalPositionY(Vector3 localPosition)
+        private Vector3 GetVerticalPosition(Vector3 position, Vector3 targetPosition, Vector3 targetVelocity)
         {
-            float s = (Target.localPosition.y - transform.localPosition.y) * (Damping * Time.deltaTime);
-            float ss = Mathf.Clamp(s, -0.5f, 0.5f);
-
-            float sss = TargetLocalVelocityY * 0.2f * Time.deltaTime;
-            Debug.Log("s: " + s + ", ss: " + ss + ", sss: " + sss);
-            if (Mathf.Abs(sss) > Mathf.Abs(ss))
-            {
-                return localPosition.y + sss;
-            }
-
-            return localPosition.y + ss;
-
-
-
-            // If the target is in the safe zone, move toward the target
-            // with damping to get smooth transition.
-            if (IsTargetInSafeZone())
-            {
-                return Mathf.Lerp(transform.localPosition.y, Target.localPosition.y, Damping * Time.deltaTime);
-            }
-
             // If the target is going out of the screen, we need move the
-            // camera faster to catch up with the target.
+            // camera faster to catch up with the target so we just apply
+            // the target velocity to the momvement.
             //
-            // When the target is moving, we use the same speed as the target
-            // to move the camera target.
-            //
-            // But if the target is not moving, or moving slowly, we use the
-            // minimam speed to move the camera target closer. Because when the
-            // target is very close to the camera, the target might be outiside
-            // of the screen, but not moving in any direction.
-            return Mathf.Abs(TargetLocalVelocityY) > 1f
-                ? localPosition.y + TargetLocalVelocityY * Time.deltaTime
-                : Mathf.Lerp(transform.localPosition.y, Target.localPosition.y, Damping * Time.deltaTime);
+            // But if the target is not moving, or moving slowly, we will let
+            // ordinary damping to move the camera target so that the camera
+            // won't stuck in the same position.
+            if (!IsTargetInSafeZone() && Mathf.Abs(targetVelocity.sqrMagnitude) > 0.01f)
+            {
+                return position + targetVelocity * Time.deltaTime;
+            }
+
+            return PlayerState.IsJumping
+                ? GetJumpStateVerticalPosition(position, targetVelocity)
+                : GetGroundStateVerticalPosition(position, targetPosition);
         }
 
         /// <summary>
-        /// Check if the target is inside the hard limit area on Y axis.
+        /// Get the next vertical position when the player is on the ground.
+        /// </summary>
+        private Vector3 GetGroundStateVerticalPosition(Vector3 position, Vector3 targetPosition)
+        {
+            // Reset JumpStateVelocity when the player is on the ground so that
+            // the jump state velocity can always start fresh.
+            _jumpStateVelocity = Vector3.zero;
+
+            return Vector3.Lerp(position, targetPosition, GroundStateDamping * Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Get the next vertical position when the player is jumping.
+        /// </summary>
+        private Vector3 GetJumpStateVerticalPosition(Vector3 position, Vector3 targetVelocity)
+        {
+            return Vector3.SmoothDamp(
+                position,
+                position + targetVelocity * JumpStateVelocityMultiplier,
+                ref _jumpStateVelocity,
+                JumpStateDamping
+            );
+        }
+
+        /// <summary>
+        /// Check if the target is inside the hard limit area (safe zone).
         /// </summary>
         private bool IsTargetInSafeZone()
         {
             Vector3 headScreenPosition = Camera.WorldToScreenPoint(TargetHead.position);
             Vector3 feetScreenPosition = Camera.WorldToScreenPoint(TargetFeet.position);
 
-            float hardLimitTop = Screen.height - HardLimitY;
-            float hardLimitBottom = HardLimitY;
+            float hardLimitTop = Screen.height - HardLimitTop;
+            float hardLimitBottom = HardLimitBottom;
 
             if (
                 headScreenPosition.y > hardLimitTop

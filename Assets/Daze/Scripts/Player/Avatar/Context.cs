@@ -15,6 +15,9 @@ namespace Daze.Player.Avatar
         public Animator Animator;
         public FallRig FallRig;
 
+        public event Action OnLanded;
+        public event Action OnJumped;
+
         public event Action EnterFloatingState;
         public event Action LeaveFloatingState;
         public event Action EnterHoveringState;
@@ -23,6 +26,16 @@ namespace Daze.Player.Avatar
         public event Action LeaveFallingState;
 
         public event Action<float> FallSpeedUpdated;
+
+        public void EmitLanded()
+        {
+            OnLanded?.Invoke();
+        }
+
+        public void EmitJumped()
+        {
+            OnJumped?.Invoke();
+        }
 
         public void EnterFloating()
         {

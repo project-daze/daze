@@ -7,6 +7,7 @@ namespace Daze.Player.Avatar
         private Vector3 _moveDirection = Vector3.zero;
         private Vector3 _lookDirection = Vector3.zero;
 
+        private bool _isJumping = false;
         private bool _jumpRequested = false;
         private bool _jumpConsumed = false;
         private bool _jumpedThisFrame = false;
@@ -196,6 +197,8 @@ namespace Daze.Player.Avatar
 
             _jumpConsumed = true;
             _jumpedThisFrame = true;
+            _isJumping = true;
+            Ctx.EmitJumped();
         }
 
         private void Jump()
@@ -227,6 +230,18 @@ namespace Daze.Player.Avatar
             // Finally, check if the character is in the grace period for
             // jumping after leaving the ground.
             return _timeSinceLastAbleToJump <= Ctx.Settings.JumpPostGroundingGraceTime;
+        }
+
+        public override void PostGroundingUpdate(float deltaTime)
+        {
+            if (Ctx.Motor.GroundingStatus.IsStableOnGround && !Ctx.Motor.LastGroundingStatus.IsStableOnGround)
+            {
+                if (_isJumping)
+                {
+                    _isJumping = false;
+                    Ctx.EmitLanded();
+                }
+            }
         }
 
         private float GetExpSmoothFactor(float power, float deltaTime)

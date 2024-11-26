@@ -21,6 +21,9 @@ namespace Daze.Player.Avatar
         private Context _ctx;
         private StateMachine<StateType, StateEvent> _fsm;
 
+        public event Action OnLanded;
+        public event Action OnJumped;
+
         public event Action EnterFloatingState;
         public event Action LeaveFloatingState;
         public event Action EnterFallingState;
@@ -62,6 +65,9 @@ namespace Daze.Player.Avatar
                 Animator = Animator,
                 FallRig = FallRig
             };
+
+            _ctx.OnLanded += () => OnLanded?.Invoke();
+            _ctx.OnJumped += () => OnJumped?.Invoke();
 
             _ctx.EnterFloatingState += () => EnterFloatingState?.Invoke();
             _ctx.LeaveFloatingState += () => LeaveFloatingState?.Invoke();
@@ -140,7 +146,9 @@ namespace Daze.Player.Avatar
             _fsm.OnAction(StateEvent.AfterCharacterUpdate, deltaTime);
         }
 
-        public void PostGroundingUpdate(float deltaTime) { }
+        public void PostGroundingUpdate(float deltaTime) {
+            _fsm.OnAction(StateEvent.PostGroundingUpdate, deltaTime);
+        }
 
         public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
 

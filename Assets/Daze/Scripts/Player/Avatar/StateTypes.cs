@@ -18,5 +18,6 @@ namespace Daze.Player.Avatar
         UpdateVelocity,
         UpdateRotation,
         AfterCharacterUpdate,
+        PostGroundingUpdate,
     }
 }
