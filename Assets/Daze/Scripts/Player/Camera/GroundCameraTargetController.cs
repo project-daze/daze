@@ -14,40 +14,35 @@ namespace Daze.Player.Camera
         /// <summary>
         /// The playes state.
         /// </summary>
-        [NonSerialized] public PlayerState PlayerState;
+        [NonSerialized] public PlayerState State;
 
         /// <summary>
         /// The main camera that is used to check if the target is going out
         /// of the screen.
         /// </summary>
-        [Tooltip("The main camera that is used to check if the target is going out of the screen.")]
         public UnityEngine.Camera Camera;
 
         /// <summary>
         /// The target (usually the avatar) to follow.
         /// </summary>
-        [Tooltip("The target to follow.")]
         public Transform Target;
 
         /// <summary>
         /// The target's head position. This is used to check if the target is
         /// going out of the screen.
         /// </summary>
-        [Tooltip("The target's head position.")]
         public Transform TargetHead;
 
         /// <summary>
         /// The target's feet position. This is used to check if the target is
         /// going out of the screen.
         /// </summary>
-        [Tooltip("The target's feet position.")]
         public Transform TargetFeet;
 
         /// <summary>
         /// The ground state damping factor for the camera movement. The higher
         /// the value, the faster the camera will follow the target.
         /// </summary>
-        [Tooltip("The ground state damping factor for the camera movement. The higher the value, the faster the camera will follow the target.")]
         public float GroundStateDamping = 0.6f;
 
         /// <summary>
@@ -55,13 +50,11 @@ namespace Daze.Player.Camera
         /// the value, the faster the camera will follow the target since it
         /// uses the `SmoothDamp` function.
         /// </summary>
-        [Tooltip("The jump state damping factor for the camera movement. The lower the value, the faster the camera will follow the target.")]
         public float JumpStateDamping = 0.6f;
 
         /// <summary>
         /// The velocity multiplier for the target's current velocity.
         /// </summary>
-        [Tooltip("The velocity multiplier for the target's current velocity.")]
         public float JumpStateVelocityMultiplier = 0.1f;
 
         /// <summary>
@@ -69,7 +62,6 @@ namespace Daze.Player.Camera
         /// If the target goes out of this limit, the camera target will
         /// accelerate to follow the target.
         /// </summary>
-        [Tooltip("The hard limit area on top of the screen.")]
         public float HardLimitTop = 32;
 
         /// <summary>
@@ -77,7 +69,6 @@ namespace Daze.Player.Camera
         /// limit. If the target goes out of this limit, the camera target
         /// will accelerate to follow the target.
         /// </summary>
-        [Tooltip("The hard limit area on top of the screen.")]
         public float HardLimitBottom = 32;
 
         /// <summary>
@@ -97,7 +88,7 @@ namespace Daze.Player.Camera
         /// </summary>
         public void OnAwake(PlayerState state)
         {
-            PlayerState = state;
+            State = state;
         }
 
         /// <summary>
@@ -195,7 +186,7 @@ namespace Daze.Player.Camera
                 return position + targetVelocity * Time.deltaTime;
             }
 
-            return PlayerState.IsJumping
+            return State.IsJumping
                 ? GetJumpStateVerticalPosition(position, targetVelocity)
                 : GetGroundStateVerticalPosition(position, targetPosition);
         }

@@ -12,13 +12,11 @@ namespace Daze.Player
 
         public AvatarController Avatar;
         public CameraController Camera;
-        public GroundCameraTargetController GroundCameraTargetController;
 
         public void Awake()
         {
-            Avatar.OnAwake(Settings, Input, Camera.Main);
+            Avatar.OnAwake(Settings, Input, Camera.MainCamera);
             Camera.OnAwake(Settings, Input, State);
-            GroundCameraTargetController.OnAwake(State);
 
             Avatar.OnLanded += () => State.IsJumping = false;
             Avatar.OnJumped += () => State.IsJumping = true;

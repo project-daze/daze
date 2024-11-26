@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using Unity.Cinemachine;
-using Daze.Player.Support;
 
 namespace Daze.Player.Camera
 {
@@ -11,183 +10,70 @@ namespace Daze.Player.Camera
         [NonSerialized] public PlayerInput Input;
         [NonSerialized] public PlayerState State;
 
-        public Transform Main;
-        public CinemachineCamera Look;
-        public CinemachineCamera Free;
-        [NonSerialized] public CinemachineTransposer FreeTransposer;
+        public Transform MainCamera;
+        public CinemachineCamera GroundCamera;
+        public GroundCameraTargetController GroundCameraTargetController;
+        public CinemachineCamera AirCamera;
+        public AirCameraTargetController AirCameraTargetController;
 
-        public Transform LookFollowTarget;
-        public Transform FreeFollowTarget;
-        public Transform Avatar;
+        public CameraState CameraState;
 
-        private float _freeDamping = 0f;
-        private float _freeFollowOffset = 0f;
-
+        /// <summary>
+        /// Awake hook to set the player cofigs from the parent.
+        /// </summary>
         public void OnAwake(PlayerSettings settings, PlayerInput input, PlayerState state)
         {
             Settings = settings;
             Input = input;
             State = state;
 
-            // FreeTransposer = Free.GetCinemachineComponent<CinemachineTransposer>();
-        }
+            CameraState.IsGroundCameraActive = IsGroundCameraActive();
 
-        public void LateUpdate()
-        {
-            HandleTransition();
-            SyncFollowTargetPosition();
-            UpdateRotation();
-            UpdateDampings();
-            UpdateFollowOffset();
+            GroundCameraTargetController.OnAwake(State);
+            AirCameraTargetController.OnAwake(Input, MainCamera, CameraState);
         }
 
         /// <summary>
-        /// If player falling state and active camera do not match, start
-        /// transitioning to the correct camera.
+        /// Update the camera states.
+        /// </summary>
+        public void LateUpdate()
+        {
+            // HandleTransition();
+        }
+
+        /// <summary>
+        /// Check if the ground camera is active.
+        /// </summary>
+        private bool IsGroundCameraActive()
+        {
+            return GroundCamera.isActiveAndEnabled;
+        }
+
+        /// <summary>
+        /// Check if the camera should be transitioning.
+        /// </summary>
+        private bool ShouldTransition()
+        {
+            if (
+                (State.IsFloating && IsGroundCameraActive())
+                || (!State.IsFloating && !IsGroundCameraActive())
+            )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Handle the camera transition between the ground and air camera.
         /// </summary>
         private void HandleTransition()
         {
             if (ShouldTransition())
             {
-                ResetDampingValue();
-                Look.gameObject.SetActive(!Look.gameObject.activeSelf);
+                GroundCamera.gameObject.SetActive(!GroundCamera.gameObject.activeSelf);
             }
-        }
-
-        private bool IsLookActive()
-        {
-            return Look.gameObject.activeSelf;
-        }
-
-        private bool ShouldTransition()
-        {
-            if (State.IsFloating && IsLookActive()) return true;
-            if (!State.IsFloating && !IsLookActive()) return true;
-            return false;
-        }
-
-        private void SyncFollowTargetPosition()
-        {
-            LookFollowTarget.transform.position = Avatar.position;
-            FreeFollowTarget.transform.position = Avatar.position;
-        }
-
-        /// <summary>
-        /// Update free camera rotation by rotating follow target. This
-        /// rotation is only required for the free camera.
-        /// </summary>
-        private void UpdateRotation()
-        {
-            // When look camera is active, sync follow target for Free camera
-            // rotation with the main camera (which is Look camera view).
-            // This will make transitioning between cameras look smooth.
-            if (IsLookActive())
-            {
-                FreeFollowTarget.rotation = Main.transform.rotation;
-                return;
-            }
-
-            // Else, it means the Free camera is active. Update its rotation
-            // using the player's input.
-            if (Input.LookComposite == Vector2.zero) return;
-
-            float x = -Input.LookComposite.y * Settings.FreeCameraRotationSpeed * Time.deltaTime;
-            float y = Input.LookComposite.x * Settings.FreeCameraRotationSpeed * Time.deltaTime;
-
-            FreeFollowTarget.Rotate(x, y, 0f);
-        }
-
-        private void UpdateDampings()
-        {
-            UpdateDampingValue();
-            FreeTransposer.m_XDamping = _freeDamping;
-            FreeTransposer.m_YDamping = _freeDamping;
-            FreeTransposer.m_ZDamping = _freeDamping;
-        }
-
-        private void UpdateDampingValue()
-        {
-            if (ShouldDamp())
-            {
-                AddDampingValue();
-            }
-            else
-            {
-                RemoveDampingValue();
-            }
-        }
-
-        private void AddDampingValue()
-        {
-            _freeDamping = _freeDamping < 4.9f
-                ? Mathf.Lerp(_freeDamping, 5f, 1f * Time.deltaTime)
-                : 5f;
-        }
-
-        private void RemoveDampingValue()
-        {
-            _freeDamping = _freeDamping > 0.01f
-                ? Mathf.Lerp(_freeDamping, 0f, 5f * Time.deltaTime)
-                : 0f;
-        }
-
-        private void ResetDampingValue()
-        {
-            _freeDamping = 0f;
-        }
-
-        /// <summary>
-        /// Check if the free camera should add dampings. The damping should
-        /// be added when the character is on hover state.
-        /// </summary>
-        private bool ShouldDamp()
-        {
-            return State.IsFloating && State.IsHovering;
-        }
-
-        private void UpdateFollowOffset()
-        {
-            UpdateFollowOffsetValue();
-            FreeTransposer.m_FollowOffset.z = _freeFollowOffset;
-        }
-
-        private void UpdateFollowOffsetValue()
-        {
-            // If the camera should not offset, reduce the offset to its
-            // default value.
-            if (!ShouldOffset())
-            {
-                ReduceFollowOffset();
-                return;
-            }
-
-            // Otherwise, offset camera based on the fall speed.
-            _freeFollowOffset = Utils.LinearMap(
-                State.FallSpeed,
-                Settings.FreeCameraOffsetMinFallSpeed,
-                Settings.MaxFallSpeed,
-                Settings.FreeCameraMinOffset,
-                Settings.FreeCameraMaxOffset
-            );
-
-            _freeFollowOffset = Mathf.Lerp(
-                _freeFollowOffset,
-                Settings.FreeCameraMaxOffset,
-                Settings.FreeCameraOffsetTransitionSpeed * Time.deltaTime
-            );
-        }
-
-        private void ReduceFollowOffset()
-        {
-            _freeFollowOffset = _freeFollowOffset < (Settings.FreeCameraMinOffset + -0.01f)
-                ? Mathf.Lerp(_freeFollowOffset, Settings.FreeCameraMinOffset, Settings.FreeCameraOffsetReduceSpeed * Time.deltaTime)
-                : Settings.FreeCameraMinOffset;
-        }
-
-        private bool ShouldOffset()
-        {
-            return State.IsFloating
-                && (State.FallSpeed > Settings.FreeCameraOffsetMinFallSpeed);
         }
     }
 }

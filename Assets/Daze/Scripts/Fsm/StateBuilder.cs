@@ -8,11 +8,10 @@ namespace Daze.Fsm
     /// the states we use in this appalication.
     ///
     /// We are using this builder pattern instead of inheriting the base
-    /// `UnityHFSM.State` here because of the following reasons.
-    ///
-    /// At first, `UnityHFSM.State` contains predefined logics inside each
-    /// actions hence if we inherit the base state, we must keep calling things
-    /// like `base.OnLogic` on every override. Which is pretty annoying.
+    /// `UnityHFSM.State` here because `UnityHFSM.State` contains predefined
+    /// logics inside each actions hence if we inherit the base state, we must
+    /// keep calling things like `base.OnLogic` on every override. Which is
+    /// pretty annoying.
     /// </summary>
     public class StateBuilder<TStateId, TEvent>
     {
