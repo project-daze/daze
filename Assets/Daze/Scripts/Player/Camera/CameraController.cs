@@ -38,7 +38,7 @@ namespace Daze.Player.Camera
         /// </summary>
         public void LateUpdate()
         {
-            // HandleTransition();
+            HandleTransition();
         }
 
         /// <summary>
@@ -54,15 +54,8 @@ namespace Daze.Player.Camera
         /// </summary>
         private bool ShouldTransition()
         {
-            if (
-                (State.IsFloating && IsGroundCameraActive())
-                || (!State.IsFloating && !IsGroundCameraActive())
-            )
-            {
-                return true;
-            }
-
-            return false;
+            return (State.IsFloating && IsGroundCameraActive())
+                || (!State.IsFloating && !IsGroundCameraActive());
         }
 
         /// <summary>
