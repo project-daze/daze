@@ -1,6 +1,8 @@
 # Project Daze
 
-Project Daze is a project to create a game where you can "fall" into the sky. Yes, it is a project that aims to create Gravity Rush style game.
+An open source action game where you 'fall' into the sky.
+
+This game is a tribute to the masterpiece Gravity Rush, built with Unity.
 
 ## Releases
 
@@ -14,15 +16,20 @@ Resources outside of Unity, such as original 3D models and docs are managed in G
 
 ## Community
 
-Join our Discord server for discussion.
+Follow us on X, and join our Discord server for discussion.
 
+- [X](https://x.com/daze_project)
 - [Discord](https://discord.gg/JCxmCbFdr2)
 
-## Development
+## Contributions
 
 We are looking for almost all kinds of contributors.
 
-- Unity version: `2023.1.10f1`
+## Development
+
+You need to have Unity installed to develop this project.
+
+- Unity version: `Unity 6: 6000.0.27f1 LTS`
 
 ### Style Guide
 

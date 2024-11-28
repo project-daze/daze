@@ -50,6 +50,7 @@ namespace Daze.Player.Avatar
             );
 
             State.AddAction<float>(StateEvent.AfterCharacterUpdate, AfterCharacterUpdate);
+            State.AddAction<float>(StateEvent.PostGroundingUpdate, PostGroundingUpdate);
         }
 
         public virtual void Update()
@@ -65,6 +66,9 @@ namespace Daze.Player.Avatar
         { }
 
         public virtual void AfterCharacterUpdate(float deltaTime)
+        { }
+
+        public virtual void PostGroundingUpdate(float deltaTime)
         { }
     }
 }

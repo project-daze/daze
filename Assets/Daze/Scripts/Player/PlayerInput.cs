@@ -17,7 +17,9 @@ namespace Daze.Player
 
         public void OnEnable()
         {
-            if (_controls != null) return;
+            if (_controls != null) {
+                return;
+            }
 
             _controls = new Controls();
             _controls.Gameplay.SetCallbacks(this);

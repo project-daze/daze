@@ -83,18 +83,5 @@ namespace Daze.Player
         public float FallAcceleration = 5f;
         public float MaxFallSpeed = 15f;
         public float FallBrakeSpeed = 10f;
-
-        // ---------------------------------------------------------------------
-        // Camera Settings
-        // ---------------------------------------------------------------------
-
-        [Header("Free Camera Settings")]
-
-        public float FreeCameraRotationSpeed = 200f;
-        public float FreeCameraMinOffset = -2f;
-        public float FreeCameraMaxOffset = -4f;
-        public float FreeCameraOffsetMinFallSpeed = 0.5f;
-        public float FreeCameraOffsetTransitionSpeed = 1f;
-        public float FreeCameraOffsetReduceSpeed = 5f;
     }
 }
