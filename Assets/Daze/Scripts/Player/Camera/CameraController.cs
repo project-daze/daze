@@ -66,6 +66,7 @@ namespace Daze.Player.Camera
             if (ShouldTransition())
             {
                 GroundCamera.gameObject.SetActive(!GroundCamera.gameObject.activeSelf);
+                CameraState.IsGroundCameraActive = !CameraState.IsGroundCameraActive;
             }
         }
     }
