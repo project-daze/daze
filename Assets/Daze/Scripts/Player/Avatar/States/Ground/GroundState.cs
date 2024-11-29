@@ -14,14 +14,27 @@ namespace Daze.Player.Avatar
         private float _timeSinceJumpRequested = 0f;
         private float _timeSinceLastAbleToJump = 0f;
 
-        public GroundState(Context ctx) : base(ctx)
-        { }
+        /// <summary>
+        /// Create a new ground state.
+        /// </summary>
+        public GroundState(Context ctx) : base(ctx) { }
 
+        /// <summary>
+        /// Setup the ground state on enter.
+        /// </summary>
         public override void OnEnter()
         {
             Ctx.Motor.SetGroundSolvingActivation(true);
 
             Ctx.Input.Jump += Jump;
+        }
+
+        /// <summary>
+        /// Reset event listeners on exit.
+        /// </summary>
+        public override void OnExit()
+        {
+            Ctx.Input.Jump -= Jump;
         }
 
         /// <summary>
@@ -47,31 +60,6 @@ namespace Daze.Player.Avatar
         }
 
         /// <summary>
-        /// Handle character movement when on ground.
-        /// </summary>
-        public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
-        {
-            // If the character is on the ground and stable, add normal
-            // velocity to move the character.
-            //
-            // If not, that means the character is off ground, like falling
-            // Off from the object, then add air movement velocity such as
-            // adding gravity to pull the character down.
-            if (Ctx.Motor.GroundingStatus.IsStableOnGround)
-            {
-                SetStableGroundMovementVelociry(ref velocity, deltaTime);
-            }
-            else
-            {
-                SetAirMovementVelocity(ref velocity, deltaTime);
-            }
-
-            // Next see if the character is trying to jump. All the conditions
-            // are handles inside this function.
-            HandleJumpMovement(ref velocity, deltaTime);
-        }
-
-        /// <summary>
         /// Rotate character toward the taget movement direction. So, if the
         /// character is moving left, it should rotate toward left, while
         /// keeping the up direction stable.
@@ -88,35 +76,45 @@ namespace Daze.Player.Avatar
             rotation = Quaternion.LookRotation(smoothedLookDirection, Ctx.Motor.CharacterUp);
         }
 
-        public override void AfterCharacterUpdate(float deltaTime)
+        /// <summary>
+        /// Handle character movement.
+        /// </summary>
+        public override void UpdateVelocity(ref Vector3 velocity, float deltaTime)
         {
-            // Handle jumping pre-ground grace period.
-            if (_jumpRequested && _timeSinceJumpRequested > Ctx.Settings.JumpPreGroundingGraceTime)
+            // If the character is on the ground and stable, add normal
+            // velocity to move the character.
+            //
+            // If not, that means the character is off ground and in the air.
+            // then add air movement velocity such as adding gravity to pull
+            // the character down.
+            if (Ctx.Motor.GroundingStatus.IsStableOnGround)
             {
-                _jumpRequested = false;
+                UpdateVelocityForGroundMovement(ref velocity, deltaTime);
+            }
+            else
+            {
+                UpdateVelocityForAirMovement(ref velocity, deltaTime);
             }
 
-            // Handle jumping while sliding. If the character is on a ground
-            // surface, reset jumping values and return here.
-            if (Ctx.Settings.AllowJumpingWhenSliding ? Ctx.Motor.GroundingStatus.FoundAnyGround : Ctx.Motor.GroundingStatus.IsStableOnGround)
-            {
-                if (!_jumpedThisFrame)
-                {
-                    _jumpConsumed = false;
-                }
-                _timeSinceLastAbleToJump = 0f;
-                return;
-            }
+            // Next see if the character is trying to jump. All the conditions
+            // are handles inside this function.
+            HandleJumpMovement(ref velocity, deltaTime);
 
-            // If not, we are still jumping. Keep track of time since we were
-            // last able to jump (for grace period).
-            _timeSinceLastAbleToJump += deltaTime;
+            // Finally, set the velocity to the animator property. The animator
+            // will play the animation based on this value.
+            Ctx.Animator.SetGroundMovementVelocity(velocity.sqrMagnitude);
         }
 
-        private void SetStableGroundMovementVelociry(ref Vector3 velocity, float deltaTime)
+        /// <summary>
+        /// Update the character's movement velocity when the character is on
+        /// the ground and stable.
+        /// </summary>
+        private void UpdateVelocityForGroundMovement(ref Vector3 velocity, float deltaTime)
         {
+            // velocity = Ctx.Animator.RootMotionPositionDelta / deltaTime;
+
             // Reorient source velocity on current ground slope. This is
-            // because we do not want our smoothing to cause any velocity
+            // because we  want our smoothing to cause any velocity
             // losses in slope changes.
             velocity = Ctx.Motor.GetDirectionTangentToSurface(velocity, Ctx.Motor.GroundingStatus.GroundNormal) * velocity.magnitude;
 
@@ -131,7 +129,11 @@ namespace Daze.Player.Avatar
             velocity = Vector3.Lerp(velocity, targetVelocity, smoothFactor);
         }
 
-        private void SetAirMovementVelocity(ref Vector3 velocity, float deltaTime)
+        /// <summary>
+        /// Update the character's movement velocity when the character is in
+        /// the air.
+        /// </summary>
+        private void UpdateVelocityForAirMovement(ref Vector3 velocity, float deltaTime)
         {
             // Add players air movement input to the velocity.
             if (_moveDirection.sqrMagnitude > 0f)
@@ -155,6 +157,10 @@ namespace Daze.Player.Avatar
             velocity *= 1f / (1f + (Ctx.Settings.AirDrag * deltaTime));
         }
 
+        /// <summary>
+        /// Handle jumping movement if the player requested to jump. The jump
+        /// tigger is set in `Jump` function which is the input listener.
+        /// </summary>
         private void HandleJumpMovement(ref Vector3 velocity, float deltaTime)
         {
             // Reset the jump checking state on every frame.
@@ -192,46 +198,49 @@ namespace Daze.Player.Avatar
             // snapped to the ground when trying to jump.
             Ctx.Motor.ForceUnground(0.1f);
 
-            // Add the jumping velocity and reset jump states.
+            // Add the jumping velocity and reset jump states, then emit the
+            // jump event.
             velocity += (jumpDirection * Ctx.Settings.JumpSpeed) - Vector3.Project(velocity, Ctx.Motor.CharacterUp);
 
+            _isJumping = true;
             _jumpConsumed = true;
             _jumpedThisFrame = true;
-            _isJumping = true;
+
             Ctx.EmitJumped();
         }
 
-        private void Jump()
+        /// <summary>
+        /// This is called after the character has finished its movement
+        /// update. Here we handle things like jumping grace period.
+        /// </summary>
+        public override void AfterCharacterUpdate(float deltaTime)
         {
-            _jumpRequested = true;
-            _timeSinceJumpRequested = 0f;
-        }
-
-        private bool CanJump()
-        {
-            // If the jump is already consumed, the character should not jump again.
-            if (_jumpConsumed)
+            // Handle jumping pre-ground grace period.
+            if (_jumpRequested && _timeSinceJumpRequested > Ctx.Settings.JumpPreGroundingGraceTime)
             {
-                return false;
+                _jumpRequested = false;
             }
 
-            // Check if the character is on the ground and stable enough to
-            // jump. This depends on `AllowJumpingWhenSliding` settings.
-            // If so, we can return true here.
-            bool isOnJumpableGround = Ctx.Settings.AllowJumpingWhenSliding
-                ? Ctx.Motor.GroundingStatus.FoundAnyGround
-                : Ctx.Motor.GroundingStatus.IsStableOnGround;
-
-            if (!isOnJumpableGround)
+            // Handle jumping while sliding. If the character is on a ground
+            // surface, reset jumping values and return here.
+            if (Ctx.Settings.AllowJumpingWhenSliding ? Ctx.Motor.GroundingStatus.FoundAnyGround : Ctx.Motor.GroundingStatus.IsStableOnGround)
             {
-                return true;
+                if (!_jumpedThisFrame)
+                {
+                    _jumpConsumed = false;
+                }
+                _timeSinceLastAbleToJump = 0f;
+                return;
             }
 
-            // Finally, check if the character is in the grace period for
-            // jumping after leaving the ground.
-            return _timeSinceLastAbleToJump <= Ctx.Settings.JumpPostGroundingGraceTime;
+            // If not, we are still jumping. Keep track of time since we were
+            // last able to jump (for grace period).
+            _timeSinceLastAbleToJump += deltaTime;
         }
 
+        /// <summary>
+        /// Handle the landing event to detect if the character has landed.
+        /// </summary>
         public override void PostGroundingUpdate(float deltaTime)
         {
             if (Ctx.Motor.GroundingStatus.IsStableOnGround && !Ctx.Motor.LastGroundingStatus.IsStableOnGround)
@@ -244,6 +253,53 @@ namespace Daze.Player.Avatar
             }
         }
 
+        /// <summary>
+        /// Handle player's jump input. Here we remember that we want to jump,
+        /// and we start keeping track of the time since jump was requested.
+        ///
+        /// The actural jump movement handling is done in `HandleJumpMovement`
+        /// called in `UpdateVelocity` hook.
+        /// </summary>
+        private void Jump()
+        {
+            _jumpRequested = true;
+            _timeSinceJumpRequested = 0f;
+        }
+
+        /// <summary>
+        /// Check if the character can jump at this moment.
+        /// </summary>
+        private bool CanJump()
+        {
+            // If the jump is already consumed, the character should not jump again.
+            if (_jumpConsumed)
+            {
+                return false;
+            }
+
+            // Check if the character is on the ground and stable enough to
+            // jump. This depends on `AllowJumpingWhenSliding` settings.
+            bool isOnJumpableGround = Ctx.Settings.AllowJumpingWhenSliding
+                ? Ctx.Motor.GroundingStatus.FoundAnyGround
+                : Ctx.Motor.GroundingStatus.IsStableOnGround;
+
+            if (!isOnJumpableGround)
+            {
+                return false;
+            }
+
+            // Finally, check if the character is in the grace period for
+            // jumping after leaving the ground.
+            return _timeSinceLastAbleToJump <= Ctx.Settings.JumpPostGroundingGraceTime;
+        }
+
+        /// <summary>
+        /// Get the exponential smoothing factor based on the given power. It
+        /// returns a factor between 0 and 1 that can be used for smoothing
+        /// values over time. The smoothing is exponential, meaning recent
+        /// changes have more weight than older ones. Higher `power` means
+        /// faster transitions.
+        /// </summary>
         private float GetExpSmoothFactor(float power, float deltaTime)
         {
             return 1 - Mathf.Exp(-power * deltaTime);

@@ -12,7 +12,7 @@ namespace Daze.Player.Avatar
         public PlayerInput Input;
         public Transform Camera;
         public KinematicCharacterMotor Motor;
-        public Animator Animator;
+        public AvatarAnimator Animator;
         public FallRig FallRig;
 
         public event Action OnLanded;

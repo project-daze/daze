@@ -15,6 +15,7 @@ namespace Daze.Player.Avatar
 
         public Transform Body;
         public Animator Animator;
+        public AvatarAnimatorMoveHook AnimatorMoveHook;
         public FallRig FallRig;
         public KinematicCharacterMotor Motor;
 
@@ -46,6 +47,7 @@ namespace Daze.Player.Avatar
             SetupInput();
             SetupContext();
             SetupFms();
+            SetupAnimatorMoveHook();
         }
 
         private void SetupInput()
@@ -62,7 +64,7 @@ namespace Daze.Player.Avatar
                 Input = Input,
                 Camera = Camera,
                 Motor = Motor,
-                Animator = Animator,
+                Animator = new AvatarAnimator(Animator),
                 FallRig = FallRig
             };
 
@@ -84,6 +86,11 @@ namespace Daze.Player.Avatar
             _fsm = new FsmBuilder(_ctx).Make();
 
             _fsm.Init();
+        }
+
+        private void SetupAnimatorMoveHook()
+        {
+            AnimatorMoveHook.OnMove += OnAvatarAnimatorMove;
         }
 
         public void Update()
@@ -144,6 +151,10 @@ namespace Daze.Player.Avatar
         {
             // _state.AfterCharacterUpdate(deltaTime);
             _fsm.OnAction(StateEvent.AfterCharacterUpdate, deltaTime);
+
+            // Reset animation root motion deltas.
+            _ctx.Animator.RootMotionPositionDelta = Vector3.zero;
+            _ctx.Animator.RootMotionRotationDelta = Quaternion.identity;
         }
 
         public void PostGroundingUpdate(float deltaTime) {
@@ -166,5 +177,21 @@ namespace Daze.Player.Avatar
         }
 
         public void OnDiscreteCollisionDetected(Collider hitCollider) { }
+
+        /// <summary>
+        /// The animation root motion callback from the attached `Animator`
+        /// component. We'll pass the data to the context so that the state
+        /// classes can use the value.
+        ///
+        /// The value gets reset every frame in `AfterCharacterUpdate` once the
+        /// the character updated its motion.
+        /// </summary>
+        public void OnAvatarAnimatorMove(Vector3 deltaPosition)
+        {
+            // Accumulate rootMotion deltas between character updates
+            Debug.Log("Animator:" + Animator.deltaPosition);
+            _ctx.Animator.RootMotionPositionDelta += deltaPosition;
+            // _ctx.Animator.RootMotionRotationDelta = Animator.deltaRotation * _ctx.Animator.RootMotionRotationDelta;
+        }
     }
 }

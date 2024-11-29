@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Daze.Player.Avatar
 {
     public class HoverToFallTransition : Transition
@@ -7,14 +5,12 @@ namespace Daze.Player.Avatar
         public override StateType From { get => StateType.Hover; }
         public override StateType To { get => StateType.Fall; }
 
-        private readonly int _fallHash = Animator.StringToHash("Fall");
-
         public HoverToFallTransition(Context ctx) : base(ctx)
         { }
 
         public override void OnTransition()
         {
-            Ctx.Animator.SetTrigger(_fallHash);
+            Ctx.Animator.TriggerFall();
             Ctx.LeaveHovering();
             Ctx.EnterFalling();
         }
