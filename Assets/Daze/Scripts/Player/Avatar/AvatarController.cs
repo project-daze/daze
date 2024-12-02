@@ -186,12 +186,11 @@ namespace Daze.Player.Avatar
         /// The value gets reset every frame in `AfterCharacterUpdate` once the
         /// the character updated its motion.
         /// </summary>
-        public void OnAvatarAnimatorMove(Vector3 deltaPosition)
+        public void OnAvatarAnimatorMove(Vector3 deltaPosition, Quaternion deltaRotation)
         {
             // Accumulate rootMotion deltas between character updates
-            Debug.Log("Animator:" + Animator.deltaPosition);
             _ctx.Animator.RootMotionPositionDelta += deltaPosition;
-            // _ctx.Animator.RootMotionRotationDelta = Animator.deltaRotation * _ctx.Animator.RootMotionRotationDelta;
+            _ctx.Animator.RootMotionRotationDelta = Animator.deltaRotation * _ctx.Animator.RootMotionRotationDelta;
         }
     }
 }

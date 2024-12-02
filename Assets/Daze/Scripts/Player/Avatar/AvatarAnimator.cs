@@ -85,5 +85,18 @@ namespace Daze.Player.Avatar
         {
             _animator.SetTrigger(_paramFall);
         }
+
+        public bool IsClipPlaying(string clipName)
+        {
+            AnimatorClipInfo[] clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
+
+            if (clipInfo.Length == 0)
+            {
+                return false;
+            }
+Debug.Log("Clip name: " + clipInfo[0].clip.name);
+Debug.Log("Is true: " + (clipInfo[0].clip.name == clipName));
+            return clipInfo[0].clip.name == clipName;
+        }
     }
 }

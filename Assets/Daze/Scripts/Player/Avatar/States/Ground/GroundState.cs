@@ -111,7 +111,17 @@ namespace Daze.Player.Avatar
         /// </summary>
         private void UpdateVelocityForGroundMovement(ref Vector3 velocity, float deltaTime)
         {
-            // velocity = Ctx.Animator.RootMotionPositionDelta / deltaTime;
+            // if (Ctx.Animator.RootMotionPositionDelta.sqrMagnitude > 0f)
+            // {
+            //     velocity = Ctx.Animator.RootMotionPositionDelta / deltaTime;
+            //     velocity = Ctx.Motor.GetDirectionTangentToSurface(velocity, Ctx.Motor.GroundingStatus.GroundNormal) * velocity.magnitude * 2f;
+            //     return;
+            // }
+
+            if (Ctx.Animator.IsClipPlaying("A_Paw_Dash_Stop_01"))
+            {
+                velocity = Ctx.Animator.RootMotionPositionDelta / deltaTime;
+            }
 
             // Reorient source velocity on current ground slope. This is
             // because we  want our smoothing to cause any velocity
