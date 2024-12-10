@@ -17,8 +17,28 @@ namespace Daze.Player
 
         [Header("Ground Movement")]
 
-        public float MaxGroundMoveSpeed = 10f;
+        /// <summary>
+        /// The speed when the character is running. You can control how fast
+        /// it reaches the target speed by `GroundMovementSharpness`.
+        /// </summary>
+        public float GroundRunSpeed = 10f;
+
+        /// <summary>
+        /// The treshold until the character starts running. This is the
+        /// character input value and uses `sqrMagnitude` of input vector.
+        /// The value is always between 0 and 1.
+        /// </summary>
+        public float GroundRunMagnitudeTreshold = 0.2f;
+
+        /// <summary>
+        /// How sharp will character accelerate to the target speed. This value
+        /// is used to calculate smooth factor for `Lerp` function.
+        /// </summary>
         public float GroundMovementSharpness = 15f;
+
+        /// <summary>
+        /// Same as `GroundMovementSharpness` but for character rotation.
+        /// </summary>
         public float GroundOrientationSharpness = 15f;
 
         // ---------------------------------------------------------------------

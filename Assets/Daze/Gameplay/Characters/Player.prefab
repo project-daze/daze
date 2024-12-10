@@ -26037,7 +26037,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Gravity: {x: 0, y: -15, z: 0}
-  MaxGroundMoveSpeed: 10
+  GroundRunSpeed: 10
+  GroundRunMagnitudeTreshold: 0.2
   GroundMovementSharpness: 15
   GroundOrientationSharpness: 15
   MaxAirMoveSpeed: 5
@@ -92727,7 +92728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6de8215c68954217b4ead6eb167abab, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1
+      value: -0.95
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b6de8215c68954217b4ead6eb167abab, type: 3}
       propertyPath: m_LocalPosition.z

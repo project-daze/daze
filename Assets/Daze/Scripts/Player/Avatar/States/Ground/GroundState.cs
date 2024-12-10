@@ -99,10 +99,6 @@ namespace Daze.Player.Avatar
             // Next see if the character is trying to jump. All the conditions
             // are handles inside this function.
             HandleJumpMovement(ref velocity, deltaTime);
-
-            // Finally, set the velocity to the animator property. The animator
-            // will play the animation based on this value.
-            Ctx.Animator.SetGroundMovementVelocity(velocity.sqrMagnitude);
         }
 
         /// <summary>
@@ -111,32 +107,55 @@ namespace Daze.Player.Avatar
         /// </summary>
         private void UpdateVelocityForGroundMovement(ref Vector3 velocity, float deltaTime)
         {
-            // if (Ctx.Animator.RootMotionPositionDelta.sqrMagnitude > 0f)
-            // {
-            //     velocity = Ctx.Animator.RootMotionPositionDelta / deltaTime;
-            //     velocity = Ctx.Motor.GetDirectionTangentToSurface(velocity, Ctx.Motor.GroundingStatus.GroundNormal) * velocity.magnitude * 2f;
-            //     return;
-            // }
-
-            if (Ctx.Animator.IsClipPlaying("A_Paw_Dash_Stop_01"))
+            // If root motion is going on, let that drive the movement.
+            if (Ctx.Animator.RootMotionPositionDelta.sqrMagnitude > 0.00001f)
             {
                 velocity = Ctx.Animator.RootMotionPositionDelta / deltaTime;
+                Ctx.Animator.SetIsRunning(false);
+                return;
             }
 
-            // Reorient source velocity on current ground slope. This is
-            // because we  want our smoothing to cause any velocity
-            // losses in slope changes.
+            // Now we try to move the character based on the player's input.
+            // At first, Reorient source velocity on current ground slope. This
+            // is because we want our smoothing to cause any velocity losses in
+            // slope changes.
             velocity = Ctx.Motor.GetDirectionTangentToSurface(velocity, Ctx.Motor.GroundingStatus.GroundNormal) * velocity.magnitude;
 
-            // Calculate target velocity.
-            Vector3 inputRight = Vector3.Cross(_moveDirection, Ctx.Motor.CharacterUp);
-            Vector3 reorientedInput = Vector3.Cross(Ctx.Motor.GroundingStatus.GroundNormal, inputRight).normalized * _moveDirection.magnitude;
-            Vector3 targetVelocity = reorientedInput * Ctx.Settings.MaxGroundMoveSpeed;
+            // Get the target velocity based on the player's input.
+            Vector3 targetVelocity = GetGroundMovementTargetVelocity(velocity);
+
+            // Set running animation based on the target velocity.
+            if (targetVelocity == Vector3.zero)
+            {
+                Ctx.Animator.SetIsRunning(false);
+            }
+            else
+            {
+                Ctx.Animator.SetIsRunning(true);
+            }
 
             // Smooth movement velocity and set to the velocity.
             float smoothFactor = GetExpSmoothFactor(Ctx.Settings.GroundMovementSharpness, deltaTime);
 
             velocity = Vector3.Lerp(velocity, targetVelocity, smoothFactor);
+        }
+
+        /// <summary>
+        /// Get the target velocity based on the player's input.
+        /// </summary>
+        private Vector3 GetGroundMovementTargetVelocity(Vector3 velocity)
+        {
+            // Only move the character if the input magnitude is above
+            // the treshold.
+            if (_moveDirection.sqrMagnitude < Ctx.Settings.GroundRunMagnitudeTreshold)
+            {
+                return Vector3.zero;
+            }
+
+            Vector3 inputRight = Vector3.Cross(_moveDirection, Ctx.Motor.CharacterUp);
+            Vector3 reorientedInput = Vector3.Cross(Ctx.Motor.GroundingStatus.GroundNormal, inputRight).normalized;
+
+            return reorientedInput * Ctx.Settings.GroundRunSpeed;
         }
 
         /// <summary>

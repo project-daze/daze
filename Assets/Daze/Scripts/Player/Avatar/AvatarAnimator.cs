@@ -10,13 +10,13 @@ namespace Daze.Player.Avatar
         private readonly Animator _animator;
 
         /// <summary>
-        /// The animation root motion posistion delta. he value is set in
+        /// The animation root motion posistion delta. The value is set in
         /// `AvatarController` through `OnAnimatorMove` callback.
         /// </summary>
         public Vector3 RootMotionPositionDelta = Vector3.zero;
 
         /// <summary>
-        /// The animation root motion rotation delta. he value is set in
+        /// The animation root motion rotation delta. The value is set in
         /// `AvatarController` through `OnAnimatorMove` callback.
         /// </summary>
         public Quaternion RootMotionRotationDelta = Quaternion.identity;
@@ -29,7 +29,7 @@ namespace Daze.Player.Avatar
         /// The parameter is set in ground state during when it updates
         /// character movement.
         /// </summary>
-        private readonly int _paramGroundMovementVelocity = Animator.StringToHash("GroundMovementVelocity");
+        private readonly int _paramIsRunning = Animator.StringToHash("IsRunning");
 
         /// <summary>
         /// The hover trigger parameter.
@@ -57,9 +57,9 @@ namespace Daze.Player.Avatar
         /// <summary>
         /// Set the ground movement velocity parameter.
         /// </summary>
-        public void SetGroundMovementVelocity(float value)
+        public void SetIsRunning(bool value)
         {
-            _animator.SetFloat(_paramGroundMovementVelocity, value);
+            _animator.SetBool(_paramIsRunning, value);
         }
 
         /// <summary>
@@ -86,6 +86,9 @@ namespace Daze.Player.Avatar
             _animator.SetTrigger(_paramFall);
         }
 
+        /// <summary>
+        /// Check if the clip of the given name is playing.
+        /// </summary>
         public bool IsClipPlaying(string clipName)
         {
             AnimatorClipInfo[] clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
@@ -94,8 +97,7 @@ namespace Daze.Player.Avatar
             {
                 return false;
             }
-Debug.Log("Clip name: " + clipInfo[0].clip.name);
-Debug.Log("Is true: " + (clipInfo[0].clip.name == clipName));
+
             return clipInfo[0].clip.name == clipName;
         }
     }
