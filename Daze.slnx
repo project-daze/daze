@@ -1,0 +1,5 @@
+﻿<Solution>
+  <Project Path="Daze.csproj" />
+  <Project Path="ThirdPartySDK.csproj" />
+  <Project Path="Controls.csproj" />
+</Solution>

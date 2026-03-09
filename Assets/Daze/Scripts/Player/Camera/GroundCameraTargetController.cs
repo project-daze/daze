@@ -46,16 +46,30 @@ namespace Daze.Player.Camera
         public float GroundStateDamping = 0.6f;
 
         /// <summary>
-        /// The jump state damping factor for the camera movement. The lower
-        /// the value, the faster the camera will follow the target since it
-        /// uses the `SmoothDamp` function.
+        /// The damping when the player is rising (moving away from the
+        /// surface). Higher value = slower follow, creating a lazy rise.
         /// </summary>
-        public float JumpStateDamping = 0.6f;
+        public float JumpRiseDamping = 0.5f;
 
         /// <summary>
-        /// The velocity multiplier for the target's current velocity.
+        /// The damping when the player is falling (moving toward the
+        /// surface). Lower value = faster follow, creating an anticipatory
+        /// descent.
         /// </summary>
-        public float JumpStateVelocityMultiplier = 0.1f;
+        public float JumpFallDamping = 1f;
+
+        /// <summary>
+        /// The velocity look-ahead multiplier when rising. Small value
+        /// means the camera barely leads upward.
+        /// </summary>
+        public float JumpRiseVelocityMultiplier = 0.05f;
+
+        /// <summary>
+        /// Vertical dead zone distance. When grounded, the camera won't
+        /// move vertically unless the target moves beyond this distance.
+        /// Prevents micro-jitter from small height changes.
+        /// </summary>
+        public float VerticalDeadZone = 0.1f;
 
         /// <summary>
         /// The padding on top of the screen on that is treated as hard limit.
@@ -82,6 +96,18 @@ namespace Daze.Player.Camera
         /// jump state camera movement.
         /// </summary>
         private Vector3 _jumpStateVelocity = Vector3.zero;
+
+        /// <summary>
+        /// The camera's vertical position when the jump started. Used as
+        /// a floor so the camera never goes below this during a jump.
+        /// </summary>
+        private Vector3 _preJumpVerticalPosition;
+
+        /// <summary>
+        /// Whether the player was jumping in the previous frame. Used to
+        /// detect the jump start and record the anchor position.
+        /// </summary>
+        private bool _wasJumping = false;
 
         /// <summary>
         /// Awake hook to set the player state from the parent.
@@ -158,7 +184,8 @@ namespace Daze.Player.Camera
             Vector3 newVerticalPosition = GetVerticalPosition(
                 verticalPosition,
                 targetVerticalPosition,
-                targetVerticalVelocity
+                targetVerticalVelocity,
+                surfaceNormal
             );
 
             // Combine ground and calculated vertical position then apply to
@@ -172,8 +199,16 @@ namespace Daze.Player.Camera
         /// <summary>
         /// Get the vertical position based on the current state.
         /// </summary>
-        private Vector3 GetVerticalPosition(Vector3 position, Vector3 targetPosition, Vector3 targetVelocity)
+        private Vector3 GetVerticalPosition(Vector3 position, Vector3 targetPosition, Vector3 targetVelocity, Vector3 surfaceNormal)
         {
+            // Record the camera's vertical position at the moment the
+            // jump begins so we can use it as a floor during the fall.
+            if (State.IsJumping && !_wasJumping)
+            {
+                _preJumpVerticalPosition = position;
+            }
+            _wasJumping = State.IsJumping;
+
             // If the target is going out of the screen, we need move the
             // camera faster to catch up with the target so we just apply
             // the target velocity to the momvement.
@@ -187,7 +222,7 @@ namespace Daze.Player.Camera
             }
 
             return State.IsJumping
-                ? GetJumpStateVerticalPosition(position, targetVelocity)
+                ? GetJumpStateVerticalPosition(position, targetVelocity, surfaceNormal)
                 : GetGroundStateVerticalPosition(position, targetPosition);
         }
 
@@ -200,19 +235,49 @@ namespace Daze.Player.Camera
             // the jump state velocity can always start fresh.
             _jumpStateVelocity = Vector3.zero;
 
+            // Don't move the camera if the target is within the dead zone.
+            // This prevents micro-jitter from small height changes on
+            // uneven ground.
+            float distance = Vector3.Distance(position, targetPosition);
+
+            if (distance < VerticalDeadZone)
+            {
+                return position;
+            }
+
             return Vector3.Lerp(position, targetPosition, GroundStateDamping * Time.deltaTime);
         }
 
         /// <summary>
         /// Get the next vertical position when the player is jumping.
+        /// Uses asymmetric parameters — slow follow when rising, fast
+        /// anticipatory follow when falling.
         /// </summary>
-        private Vector3 GetJumpStateVerticalPosition(Vector3 position, Vector3 targetVelocity)
+        private Vector3 GetJumpStateVerticalPosition(Vector3 position, Vector3 targetVelocity, Vector3 surfaceNormal)
         {
+            // Positive = rising (away from surface), negative = falling.
+            float verticalSpeed = Vector3.Dot(targetVelocity, surfaceNormal);
+            bool isRising = verticalSpeed > 0f;
+
+            if (isRising)
+            {
+                // Rising: lazily follow upward using velocity look-ahead.
+                return Vector3.SmoothDamp(
+                    position,
+                    position + targetVelocity * JumpRiseVelocityMultiplier,
+                    ref _jumpStateVelocity,
+                    JumpRiseDamping
+                );
+            }
+
+            // Falling: smoothly return toward the pre-jump position.
+            // This makes the camera start descending before the character
+            // passes it, but never go below where it started.
             return Vector3.SmoothDamp(
                 position,
-                position + targetVelocity * JumpStateVelocityMultiplier,
+                _preJumpVerticalPosition,
                 ref _jumpStateVelocity,
-                JumpStateDamping
+                JumpFallDamping
             );
         }
 
